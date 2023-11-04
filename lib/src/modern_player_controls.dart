@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:floating/floating.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:modern_player/src/modern_player_options.dart';
@@ -14,14 +13,12 @@ class ModernplayerControls extends StatefulWidget {
       required this.viewSize,
       required this.qualityOptions,
       required this.modernPlayerControlsOptions,
-      required this.floating,
       required this.onBackPressed});
 
   final VlcPlayerController player;
   final Size viewSize;
   final List<ModernPlayerQualityOptions> qualityOptions;
   final ModernPlayerControlsOptions modernPlayerControlsOptions;
-  final Floating floating;
   final VoidCallback onBackPressed;
 
   @override
@@ -318,151 +315,19 @@ class _ModernplayerControlsState extends State<ModernplayerControls> {
 
   @override
   Widget build(BuildContext context) {
-    return Positioned.fromRect(
-        rect:
-            Rect.fromLTWH(0, 0, widget.viewSize.width, widget.viewSize.height),
+    return Positioned.fill(
         child: Stack(
-          fit: StackFit.expand,
-          children: [
-            AnimatedSwitcher(
-              duration: const Duration(milliseconds: 250),
-              reverseDuration: const Duration(milliseconds: 400),
-              child: !_hideStuff
-                  ? Stack(
-                      key: const ValueKey<int>(0),
-                      fit: StackFit.expand,
-                      children: [
-                        GestureDetector(
-                          onTap: _cancelAndRestartTimer,
-                          onDoubleTapDown: _onDoubleTap,
-                          onVerticalDragStart: onVerticalDragStartFun,
-                          onVerticalDragUpdate: onVerticalDragUpdateFun,
-                          onVerticalDragEnd: onVerticalDragEndFun,
-                          onHorizontalDragStart: (details) {},
-                          child: Container(
-                            color: Colors.transparent,
-                            padding: const EdgeInsets.all(10),
-                            child: Column(
-                              children: [
-                                Row(
-                                  children: [
-                                    if (widget.modernPlayerControlsOptions
-                                        .showBackbutton)
-                                      // Back Button
-                                      SizedBox(
-                                        height: 50,
-                                        width: 50,
-                                        child: InkWell(
-                                          onTap: () {
-                                            widget.onBackPressed.call();
-                                          },
-                                          child: Card(
-                                            color:
-                                                Colors.black.withOpacity(.75),
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10)),
-                                            child: const Icon(
-                                              Icons.arrow_back_ios_new_rounded,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    const Spacer(),
-                                    // Floating
-                                    if (widget.modernPlayerControlsOptions
-                                        .showFloating)
-                                      SizedBox(
-                                        height: 50,
-                                        width: 50,
-                                        child: InkWell(
-                                          onTap: () {
-                                            _cancelAndRestartTimer();
-                                            widget.floating.enable();
-                                            _startHideTimer();
-                                          },
-                                          child: Card(
-                                            color:
-                                                Colors.black.withOpacity(.75),
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10)),
-                                            child: const Icon(
-                                              Icons.picture_in_picture,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    // Mute/Unmute
-                                    if (widget
-                                        .modernPlayerControlsOptions.showMute)
-                                      SizedBox(
-                                        height: 50,
-                                        width: 50,
-                                        child: InkWell(
-                                          onTap: () {
-                                            setState(() {
-                                              _startHideTimer();
-                                              if (player.value.volume > 0) {
-                                                player.setVolume(0);
-                                              } else {
-                                                _volume = 100;
-                                                player.setVolume(100);
-                                              }
-                                            });
-                                          },
-                                          child: Card(
-                                            color:
-                                                Colors.black.withOpacity(.75),
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10)),
-                                            child: Icon(
-                                              player.value.volume > 0
-                                                  ? Icons.volume_up_rounded
-                                                  : Icons.volume_off_rounded,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    // Settings/Menu
-                                    if (widget
-                                        .modernPlayerControlsOptions.showMenu)
-                                      SizedBox(
-                                        height: 50,
-                                        width: 50,
-                                        child: InkWell(
-                                          onTap: () {
-                                            _startHideTimer();
-                                            showOptions(context);
-                                          },
-                                          child: Card(
-                                            color:
-                                                Colors.black.withOpacity(.75),
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(10)),
-                                            child: const Icon(
-                                              Icons.settings_rounded,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      )
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                        if (widget.modernPlayerControlsOptions.showBottomBar)
-                          _bottomBar(context),
-                      ],
-                    )
-                  : GestureDetector(
+      fit: StackFit.expand,
+      children: [
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 250),
+          reverseDuration: const Duration(milliseconds: 400),
+          child: !_hideStuff
+              ? Stack(
+                  key: const ValueKey<int>(0),
+                  fit: StackFit.expand,
+                  children: [
+                    GestureDetector(
                       onTap: _cancelAndRestartTimer,
                       onDoubleTapDown: _onDoubleTap,
                       onVerticalDragStart: onVerticalDragStartFun,
@@ -471,45 +336,158 @@ class _ModernplayerControlsState extends State<ModernplayerControls> {
                       onHorizontalDragStart: (details) {},
                       child: Container(
                         color: Colors.transparent,
-                        child: Stack(
+                        padding: const EdgeInsets.all(10),
+                        child: Column(
                           children: [
-                            Positioned.fill(
-                                child: (_slidingValue != null)
-                                    ? IgnorePointer(
-                                        child: _brightness != null
-                                            ? _VideoControlsSliderToast(
-                                                _brightness!,
-                                                1,
-                                                _valController.stream)
-                                            : _VideoControlsSliderToast(
-                                                _volume!,
-                                                0,
-                                                _valController.stream),
-                                      )
-                                    : const SizedBox.shrink())
+                            Row(
+                              children: [
+                                if (widget
+                                    .modernPlayerControlsOptions.showBackbutton)
+                                  // Back Button
+                                  SizedBox(
+                                    height: 50,
+                                    width: 50,
+                                    child: InkWell(
+                                      onTap: () {
+                                        widget.onBackPressed.call();
+                                      },
+                                      child: Card(
+                                        color: getIconsBackgroundColor(),
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                        child: widget
+                                                .modernPlayerControlsOptions
+                                                .themeOptions
+                                                ?.backIcon ??
+                                            const Icon(
+                                              Icons.arrow_back_ios_new_rounded,
+                                              color: Colors.white,
+                                            ),
+                                      ),
+                                    ),
+                                  ),
+                                const Spacer(),
+                                // Mute/Unmute
+                                if (widget.modernPlayerControlsOptions.showMute)
+                                  SizedBox(
+                                    height: 50,
+                                    width: 50,
+                                    child: InkWell(
+                                      onTap: () {
+                                        setState(() {
+                                          _startHideTimer();
+                                          if (player.value.volume > 0) {
+                                            player.setVolume(0);
+                                          } else {
+                                            _volume = 100;
+                                            player.setVolume(100);
+                                          }
+                                        });
+                                      },
+                                      child: Card(
+                                        color: getIconsBackgroundColor(),
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                        child: player.value.volume > 0
+                                            ? widget.modernPlayerControlsOptions
+                                                    .themeOptions?.muteIcon ??
+                                                const Icon(
+                                                  Icons.volume_up_rounded,
+                                                  color: Colors.white,
+                                                )
+                                            : widget.modernPlayerControlsOptions
+                                                    .themeOptions?.unmuteIcon ??
+                                                const Icon(
+                                                  Icons.volume_off_rounded,
+                                                  color: Colors.white,
+                                                ),
+                                      ),
+                                    ),
+                                  ),
+                                // Settings/Menu
+                                if (widget.modernPlayerControlsOptions.showMenu)
+                                  SizedBox(
+                                    height: 50,
+                                    width: 50,
+                                    child: InkWell(
+                                      onTap: () {
+                                        _startHideTimer();
+                                        showOptions(context);
+                                      },
+                                      child: Card(
+                                        color: getIconsBackgroundColor(),
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                        child: widget
+                                                .modernPlayerControlsOptions
+                                                .themeOptions
+                                                ?.menuIcon ??
+                                            const Icon(
+                                              Icons.settings_rounded,
+                                              color: Colors.white,
+                                            ),
+                                      ),
+                                    ),
+                                  )
+                              ],
+                            )
                           ],
                         ),
                       ),
                     ),
-            ),
-            if (_isLoading)
-              Positioned.fill(
-                child: Align(
-                  alignment: Alignment.center,
-                  child: SizedBox(
-                    height: 75,
-                    width: 75,
-                    child: CircularProgressIndicator(
-                      color: widget.modernPlayerControlsOptions.themeOptions
-                              ?.loadingColor ??
-                          Colors.greenAccent,
-                      strokeCap: StrokeCap.round,
+                    if (widget.modernPlayerControlsOptions.showBottomBar)
+                      _bottomBar(context),
+                  ],
+                )
+              : GestureDetector(
+                  onTap: _cancelAndRestartTimer,
+                  onDoubleTapDown: _onDoubleTap,
+                  onVerticalDragStart: onVerticalDragStartFun,
+                  onVerticalDragUpdate: onVerticalDragUpdateFun,
+                  onVerticalDragEnd: onVerticalDragEndFun,
+                  onHorizontalDragStart: (details) {},
+                  child: Container(
+                    color: Colors.transparent,
+                    child: Stack(
+                      children: [
+                        Positioned.fill(
+                            child: (_slidingValue != null)
+                                ? IgnorePointer(
+                                    child: _brightness != null
+                                        ? _VideoControlsSliderToast(
+                                            _brightness!,
+                                            1,
+                                            _valController.stream)
+                                        : _VideoControlsSliderToast(
+                                            _volume!, 0, _valController.stream),
+                                  )
+                                : const SizedBox.shrink())
+                      ],
                     ),
                   ),
                 ),
-              )
-          ],
-        ));
+        ),
+        if (_isLoading)
+          Positioned.fill(
+            child: Align(
+              alignment: Alignment.center,
+              child: SizedBox(
+                height: 75,
+                width: 75,
+                child: CircularProgressIndicator(
+                  color: widget.modernPlayerControlsOptions.themeOptions
+                          ?.loadingColor ??
+                      Colors.greenAccent,
+                  strokeCap: StrokeCap.round,
+                ),
+              ),
+            ),
+          )
+      ],
+    ));
   }
 
   Widget _bottomBar(BuildContext context) {
@@ -528,7 +506,7 @@ class _ModernplayerControlsState extends State<ModernplayerControls> {
       child: Container(
         height: 50,
         decoration: BoxDecoration(
-            color: Colors.black.withOpacity(.75),
+            color: getIconsBackgroundColor(),
             borderRadius: BorderRadius.circular(15)),
         margin: const EdgeInsets.symmetric(horizontal: 15),
         padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -584,11 +562,9 @@ class _ModernplayerControlsState extends State<ModernplayerControls> {
             Text(
               getFormattedDuration(
                   _seekPos > 0 ? Duration(seconds: _seekPos) : _currentPos),
-              style: TextStyle(
-                  color: widget.modernPlayerControlsOptions.progressSliderTheme
-                          ?.textColor ??
-                      Colors.white,
-                  fontSize: 12),
+              style: widget.modernPlayerControlsOptions.progressSliderTheme
+                      ?.progressTextStyle ??
+                  const TextStyle(color: Colors.white, fontSize: 12),
             ),
             const SizedBox(
               width: 10,
@@ -631,11 +607,9 @@ class _ModernplayerControlsState extends State<ModernplayerControls> {
             ),
             Text(
               "-${getFormattedDuration(_seekPos > 0 ? Duration(seconds: duration - _seekPos) : remaining)}",
-              style: TextStyle(
-                  color: widget.modernPlayerControlsOptions.progressSliderTheme
-                          ?.textColor ??
-                      Colors.white,
-                  fontSize: 12),
+              style: widget.modernPlayerControlsOptions.progressSliderTheme
+                      ?.progressTextStyle ??
+                  const TextStyle(color: Colors.white, fontSize: 12),
             ),
             const SizedBox(
               width: 5,
@@ -644,13 +618,6 @@ class _ModernplayerControlsState extends State<ModernplayerControls> {
         ),
       ),
     );
-  }
-
-  Color getMenuBackgroundColor() {
-    Color? color = widget.modernPlayerControlsOptions.themeOptions == null
-        ? const Color.fromARGB(255, 20, 20, 20)
-        : widget.modernPlayerControlsOptions.themeOptions!.backgroundColor;
-    return color!;
   }
 
   void showOptions(BuildContext context) {
@@ -987,6 +954,19 @@ class _ModernplayerControlsState extends State<ModernplayerControls> {
         ),
       ),
     );
+  }
+
+  Color getMenuBackgroundColor() {
+    return widget
+            .modernPlayerControlsOptions.themeOptions?.menuBackgroundColor ??
+        const Color.fromARGB(255, 20, 20, 20);
+  }
+
+  Color getIconsBackgroundColor() {
+    Color? color =
+        widget.modernPlayerControlsOptions.themeOptions?.backgroundColor ??
+            Colors.black.withOpacity(.75);
+    return color;
   }
 }
 

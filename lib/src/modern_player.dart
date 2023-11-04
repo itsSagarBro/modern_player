@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:floating/floating.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:modern_player/src/modern_player_controls.dart';
@@ -19,8 +18,7 @@ class ModernPlayer extends StatefulWidget {
       {required List<ModernPlayerQualityOptions> qualityOptions,
       ModernPlayerType type = ModernPlayerType.network,
       ModernPlayerControlsOptions? controlsOptions,
-      VoidCallback? onBackPressed,
-      String? posterUrl}) {
+      VoidCallback? onBackPressed}) {
     return ModernPlayer._(
       qualityOptions: qualityOptions,
       type: type,
@@ -45,23 +43,17 @@ class ModernPlayer extends StatefulWidget {
   State<ModernPlayer> createState() => _ModernPlayerState();
 }
 
-class _ModernPlayerState extends State<ModernPlayer> with RouteAware {
+class _ModernPlayerState extends State<ModernPlayer> {
   late VlcPlayerController _playerController;
-  final Floating _pipFloating = Floating();
 
   bool isDisposed = false;
   bool isPushed = false;
 
   double visibilityFraction = 1;
 
-  ModernPlayerControlsOptions controlsOptions = ModernPlayerControlsOptions();
-
   @override
   void initState() {
     super.initState();
-    if (widget.controlsOptions != null) {
-      controlsOptions = widget.controlsOptions!;
-    }
 
     if (widget.type == ModernPlayerType.network) {
       _playerController = VlcPlayerController.network(
@@ -123,24 +115,24 @@ class _ModernPlayerState extends State<ModernPlayer> with RouteAware {
     return Stack(
       fit: StackFit.expand,
       children: [
-        PiPSwitcher(
-          child: VisibilityDetector(
-            key: const ValueKey<int>(0),
-            onVisibilityChanged: (info) {
+        VisibilityDetector(
+          key: const ValueKey<int>(0),
+          onVisibilityChanged: (info) {
+            if (widget.controlsOptions?.controlVisibiltyPlay ?? true) {
               _onChangeVisibility(info.visibleFraction);
-            },
-            child: VlcPlayer(
-              controller: _playerController,
-              aspectRatio: screenSize.width / screenSize.height,
-            ),
+            }
+          },
+          child: VlcPlayer(
+            controller: _playerController,
+            aspectRatio: screenSize.width / screenSize.height,
           ),
         ),
-        if (widget.controlsOptions!.showControls)
+        if (widget.controlsOptions?.showControls ?? true)
           ModernplayerControls(
             player: _playerController,
             qualityOptions: widget.qualityOptions,
-            modernPlayerControlsOptions: controlsOptions,
-            floating: _pipFloating,
+            modernPlayerControlsOptions:
+                widget.controlsOptions ?? ModernPlayerControlsOptions(),
             viewSize: Size(MediaQuery.of(context).size.width,
                 MediaQuery.of(context).size.height),
             onBackPressed: () {

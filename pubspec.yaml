@@ -13,11 +13,8 @@ dependencies:
     sdk: flutter
   visibility_detector: ^0.3.3
   screen_brightness: ^0.2.2+1
-  wakelock: ^0.6.2
   flutter_vlc_player:
     path: ./local_packages/flutter_vlc_player
-  floating:
-    path: ./local_packages/floating
 
 dev_dependencies:
   flutter_test:
