@@ -58,6 +58,118 @@ dependencies:
   modern_player: <latest_version>
 ```
 
+## Instalation for flutter_vlc_player
+
+### iOS
+
+If you're unable to view media loaded from an external source, you should also add the following:
+```xml
+<key>NSAppTransportSecurity</key>
+<dict>
+  <key>NSAllowsArbitraryLoads</key>
+  <true/>
+</dict>
+```
+For more information, or for more granular control over your App Transport Security (ATS) restrictions, you should
+[read Apple's documentation](https://developer.apple.com/documentation/bundleresources/information_property_list/nsapptransportsecurity/nsallowsarbitraryloads).
+
+Make sure that following line in `<project root>/ios/Podfile` uncommented:
+
+`platform :ios, '9.0'`
+
+> NOTE: While the Flutter `video_player` is not functional on iOS Simulators, this package (`flutter_vlc_player`) **is**
+> fully functional on iOS simulators.
+
+To enable vlc cast functionality for external displays (chromecast), you should also add the following:
+
+```xml
+<key>NSLocalNetworkUsageDescription</key>
+<string>Used to search for chromecast devices</string>
+<key>NSBonjourServices</key>
+<array>
+  <string>_googlecast._tcp</string>
+</array>
+```
+
+<hr>
+
+### Android
+To load media/subitle from an internet source, your app will need the `INTERNET` permission.  
+This is done by ensuring your `<project root>/android/app/src/main/AndroidManifest.xml` file contains a `uses-permission`
+declaration for `android.permission.INTERNET`:
+```xml
+<uses-permission android:name="android.permission.INTERNET" />
+```
+
+As Flutter includes this permission by default, the permission is likely already declared in the file.
+
+Note that if you got "Cleartext HTTP traffic to * is not permitted"
+you need to add the `android:usesClearTextTraffic="true"` flag in the AndroidManifest.xml file, or define a new "Network Security Configuration" file. For more information, check https://developer.android.com/training/articles/security-config
+
+<br>
+
+In order to load media/subtitle from internal device storage, you should put the storage permissions as follows:
+```xml
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+```
+In some cases you also need to add the `android:requestLegacyExternalStorage="true"` flag to the Application tag in AndroidManifest.xml file.
+
+After that you can access the media/subtitle file by 
+
+    "/storage/emulated/0/{FilePath}"
+    "/sdcard/{FilePath}"
+
+<hr>
+
+#### Android build configuration
+
+1. In `android/app/build.gradle`:
+```groovy
+android {
+    packagingOptions {
+       // Fixes duplicate libraries build issue, 
+       // when your project uses more than one plugin that depend on C++ libs.
+        pickFirst 'lib/**/libc++_shared.so'
+    }
+   
+   buildTypes {
+      release {
+         minifyEnabled true
+         proguardFiles getDefaultProguardFile(
+                 'proguard-android-optimize.txt'),
+                 'proguard-rules.pro'
+      }
+   }
+}
+```
+
+2. Create `android/app/proguard-rules.pro`, add the following lines:
+```proguard
+-keep class org.videolan.libvlc.** { *; }
+```
+<hr>
+
+#### Android multi-window support
+
+To enable multi-window support in your Android application, you need to make changes to `AndroidManifest.xml`, add the `android:resizeableActivity` key for the main activity, as well as the `android.allow_multiple_resumed_activities` metadata for application:
+```xml
+<manifest ...>
+  <application ...>
+    <activity ...
+      android:resizeableActivity="true">
+      ...
+    </activity>
+    ...
+    <meta-data
+      android:name="android.allow_multiple_resumed_activities"
+      android:value="true" />
+  </application>
+</manifest>
+```
+
+<br>
+
 ## Using it
 
 ```dart

@@ -70,10 +70,11 @@ packages:
   flutter_vlc_player:
     dependency: transitive
     description:
-      path: "../local_packages/flutter_vlc_player"
-      relative: true
-    source: path
-    version: "7.3.1"
+      name: flutter_vlc_player
+      sha256: "3e4094a0f2c9d8d7017dd3d8c270694286672fada162185499339feefbf7b870"
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.4.0"
   flutter_vlc_player_platform_interface:
     dependency: transitive
     description:

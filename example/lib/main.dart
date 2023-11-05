@@ -58,7 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       showMute: false,
                       showBackbutton: false,
                       enableVolumeSlider: true,
-                      enableBrigthnessSlider: true,
+                      enableBrightnessSlider: true,
                       showBottomBar: true,
                       themeOptions: ModernPlayerThemeOptions(
                           backgroundColor: Colors.black,
