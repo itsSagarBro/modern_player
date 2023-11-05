@@ -102,10 +102,10 @@ class _ModernPlayerState extends State<ModernPlayer> {
   @override
   void dispose() async {
     super.dispose();
-    isDisposed = true;
     if (_playerController.value.isInitialized) {
       _playerController.dispose();
     }
+    isDisposed = true;
   }
 
   @override
