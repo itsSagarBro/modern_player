@@ -59,7 +59,18 @@ class _ModernplayerControlsState extends State<ModernplayerControls> {
   Map? _audioTracks;
   Map? _subtitleTracks;
 
-  List<String> renders = List.empty(growable: true);
+  final List<double> _playbackSpeeds = [
+    0.25,
+    0.5,
+    0.75,
+    1.0,
+    1.25,
+    1.5,
+    1.75,
+    2
+  ];
+
+  List<ModernPlayerCustomActionButton> _customActionButtons = [];
 
   @override
   void initState() {
@@ -69,6 +80,8 @@ class _ModernplayerControlsState extends State<ModernplayerControls> {
     _currentPos = player.value.position;
 
     _currentQuality = widget.qualityOptions.last;
+
+    _customActionButtons = widget.controlsOptions.customActionButtons ?? [];
 
     player.addListener(_listen);
 
@@ -384,6 +397,37 @@ class _ModernplayerControlsState extends State<ModernplayerControls> {
                                     ),
                                   ),
                                 const Spacer(),
+                                // Custom Buttons
+                                ..._customActionButtons.map(
+                                  (e) => SizedBox(
+                                    height: 50,
+                                    width: 50,
+                                    child: InkWell(
+                                      onTap: () {
+                                        if (e.onPressed != null) {
+                                          e.onPressed!.call();
+                                        }
+                                      },
+                                      onDoubleTap: () {
+                                        if (e.onDoubleTap != null) {
+                                          e.onDoubleTap!.call();
+                                        }
+                                      },
+                                      onLongPress: () {
+                                        if (e.onLongPress != null) {
+                                          e.onLongPress!.call();
+                                        }
+                                      },
+                                      child: Card(
+                                        color: getIconsBackgroundColor(),
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                        child: e.icon,
+                                      ),
+                                    ),
+                                  ),
+                                ),
                                 // Mute/Unmute
                                 if (widget.controlsOptions.showMute)
                                   SizedBox(
@@ -669,6 +713,36 @@ class _ModernplayerControlsState extends State<ModernplayerControls> {
             const SizedBox(
               height: 30,
             ),
+            GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+                showPlabackSpeedOptions();
+              },
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.settings_outlined,
+                    color: Colors.white,
+                  ),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  const Text(
+                    "Plaback speed  ◉  ",
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                  Text(
+                    player.value.playbackSpeed == 1
+                        ? "Normal"
+                        : "${player.value.playbackSpeed.toStringAsFixed(2)}x",
+                    style: const TextStyle(color: Colors.white60, fontSize: 16),
+                  )
+                ],
+              ),
+            ),
+            const SizedBox(
+              height: 30,
+            ),
             _subtitleRowWidget(context),
             const SizedBox(
               height: 30,
@@ -823,6 +897,60 @@ class _ModernplayerControlsState extends State<ModernplayerControls> {
                       ),
                       Text(
                         e.name,
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 16),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  void showPlabackSpeedOptions() {
+    showModalBottomSheet(
+      context: context,
+      useSafeArea: true,
+      showDragHandle: true,
+      backgroundColor: getMenuBackgroundColor(),
+      constraints: const BoxConstraints(maxWidth: 400),
+      builder: (context) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ..._playbackSpeeds.map(
+              (e) => InkWell(
+                onTap: () {
+                  if (e != player.value.playbackSpeed) {
+                    player.setPlaybackSpeed(e);
+                    Navigator.pop(context);
+                  }
+                },
+                child: Container(
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  child: Row(
+                    children: [
+                      if (e == player.value.playbackSpeed)
+                        const SizedBox(
+                          width: 15,
+                          child: Icon(
+                            Icons.check_rounded,
+                            color: Colors.white,
+                          ),
+                        ),
+                      SizedBox(
+                        width: e == player.value.playbackSpeed ? 20 : 35,
+                      ),
+                      Text(
+                        e == 1 ? "Normal" : "${e.toStringAsFixed(2)}x",
                         style:
                             const TextStyle(color: Colors.white, fontSize: 16),
                       ),

@@ -1,6 +1,9 @@
-## 0.0.2
+## 0.0.3
 
 * Moved theme option from control option to modern player
+* Added videoStartAt in controls option
+* Added playback speed controls in menu
+* Added custom action button support in controls option
 
 ## 0.0.2
 

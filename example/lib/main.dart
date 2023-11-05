@@ -31,6 +31,45 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  // Theme option for modern_player
+  var themeOptions = ModernPlayerThemeOptions(
+      backgroundColor: Colors.black,
+      menuBackgroundColor: Colors.black,
+      loadingColor: Colors.blue,
+      menuIcon: const Icon(
+        Icons.settings,
+        color: Colors.white,
+      ),
+      progressSliderTheme: ModernPlayerProgressSliderTheme(
+          activeSliderColor: Colors.blue,
+          inactiveSliderColor: Colors.white70,
+          bufferSliderColor: Colors.black54,
+          thumbColor: Colors.white,
+          progressTextStyle: const TextStyle(
+              fontWeight: FontWeight.w400, color: Colors.white, fontSize: 18)));
+
+  // Controls option for modern_player
+  var controlsOptions = ModernPlayerControlsOptions(
+      showControls: true,
+      doubleTapToSeek: true,
+      showMenu: true,
+      showMute: false,
+      showBackbutton: false,
+      enableVolumeSlider: true,
+      enableBrightnessSlider: true,
+      showBottomBar: true,
+      customActionButtons: [
+        ModernPlayerCustomActionButton(
+          icon: const Icon(
+            Icons.info_rounded,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            // On Pressed
+          },
+        ),
+      ]);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,44 +83,12 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             SizedBox(
               height: 250,
-              child: ModernPlayer.createPlayer(
-                  qualityOptions: [
-                    ModernPlayerQualityOptions(
-                        name: "480p",
-                        url:
-                            "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4"),
-                    ModernPlayerQualityOptions(
-                        name: "720p",
-                        url:
-                            "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4")
-                  ],
-                  themeOptions: ModernPlayerThemeOptions(
-                      backgroundColor: Colors.black,
-                      menuBackgroundColor: Colors.black,
-                      loadingColor: Colors.white,
-                      menuIcon: const Icon(
-                        Icons.settings,
-                        color: Colors.white,
-                      ),
-                      progressSliderTheme: ModernPlayerProgressSliderTheme(
-                          activeSliderColor: Colors.blue,
-                          inactiveSliderColor: Colors.white70,
-                          bufferSliderColor: Colors.black54,
-                          thumbColor: Colors.white,
-                          progressTextStyle: const TextStyle(
-                              fontWeight: FontWeight.w400,
-                              color: Colors.white,
-                              fontSize: 18))),
-                  controlsOptions: ModernPlayerControlsOptions(
-                    showControls: true,
-                    doubleTapToSeek: false,
-                    showMenu: true,
-                    showMute: false,
-                    showBackbutton: false,
-                    enableVolumeSlider: true,
-                    enableBrightnessSlider: true,
-                    showBottomBar: true,
-                  )),
+              child: ModernPlayer.createPlayer(qualityOptions: [
+                ModernPlayerQualityOptions(
+                    name: "Default",
+                    url:
+                        "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4"),
+              ], themeOptions: themeOptions, controlsOptions: controlsOptions),
             )
           ],
         ),

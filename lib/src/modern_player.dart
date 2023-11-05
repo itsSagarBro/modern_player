@@ -7,6 +7,12 @@ import 'package:modern_player/src/modern_player_options.dart';
 import 'package:modern_player/src/modern_players_enums.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
+/// Modern Player gives you a controller for flutter_vlc_player.
+///
+/// For displaying the video in Flutter, You can create video player widget by calling [createPlayer].
+///
+/// To customize video player controls or theme you can add [controlsOptions] and [themeOptions]
+/// when calling [createPlayer]
 class ModernPlayer extends StatefulWidget {
   const ModernPlayer._(
       {required this.qualityOptions,
@@ -14,21 +20,6 @@ class ModernPlayer extends StatefulWidget {
       this.controlsOptions,
       this.themeOptions,
       this.onBackPressed});
-
-  static Widget createPlayer(
-      {required List<ModernPlayerQualityOptions> qualityOptions,
-      ModernPlayerType type = ModernPlayerType.network,
-      ModernPlayerControlsOptions? controlsOptions,
-      ModernPlayerThemeOptions? themeOptions,
-      VoidCallback? onBackPressed}) {
-    return ModernPlayer._(
-      qualityOptions: qualityOptions,
-      type: type,
-      controlsOptions: controlsOptions,
-      themeOptions: themeOptions,
-      onBackPressed: onBackPressed,
-    );
-  }
 
   /// Video quality options for multiple qualities. If you have only one quality video just add one in list.
   final List<ModernPlayerQualityOptions> qualityOptions;
@@ -44,6 +35,21 @@ class ModernPlayer extends StatefulWidget {
 
   /// Callback when user pressed back button of controls.
   final VoidCallback? onBackPressed;
+
+  static Widget createPlayer(
+      {required List<ModernPlayerQualityOptions> qualityOptions,
+      ModernPlayerType type = ModernPlayerType.network,
+      ModernPlayerControlsOptions? controlsOptions,
+      ModernPlayerThemeOptions? themeOptions,
+      VoidCallback? onBackPressed}) {
+    return ModernPlayer._(
+      qualityOptions: qualityOptions,
+      type: type,
+      controlsOptions: controlsOptions,
+      themeOptions: themeOptions,
+      onBackPressed: onBackPressed,
+    );
+  }
 
   @override
   State<ModernPlayer> createState() => _ModernPlayerState();
@@ -79,7 +85,19 @@ class _ModernPlayerState extends State<ModernPlayer> {
           hwAcc: HwAcc.full);
     }
 
+    _playerController.addOnInitListener(_onInitialize);
     _playerController.addListener(_checkVideoLoaded);
+  }
+
+  void _onInitialize() async {
+    if (widget.controlsOptions?.videoStartAt != null) {
+      do {
+        await Future.delayed(const Duration(milliseconds: 100));
+      } while (_playerController.value.playingState != PlayingState.playing);
+
+      await _playerController.seekTo(
+          Duration(milliseconds: widget.controlsOptions!.videoStartAt!));
+    }
   }
 
   void _checkVideoLoaded() {
@@ -111,6 +129,8 @@ class _ModernPlayerState extends State<ModernPlayer> {
     if (_playerController.value.isInitialized) {
       _playerController.dispose();
     }
+    _playerController.removeListener(_checkVideoLoaded);
+    _playerController.removeOnInitListener(_onInitialize);
     isDisposed = true;
   }
 

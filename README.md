@@ -30,11 +30,8 @@ With modern_player, you can provide a top-notch video playback experience to you
 * Video Cast/Screen Mirroring (Chromecast)
 * Support for fullscreen
 * Custom ErrorBuilder
-* Playbackspeed Control
 * Placeholder Widget
 * Loop Support
-* Video start at
-* Custom options
 
 ## Installation
 

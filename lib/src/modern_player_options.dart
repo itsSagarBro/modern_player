@@ -43,8 +43,14 @@ class ModernPlayerControlsOptions {
   /// Toggle double tap to seek.
   bool doubleTapToSeek;
 
-  /// When enabled, Video player will automatically gets paused when it is not visible and play when itss visible.
+  /// When enabled, Video player will automatically gets paused when it is not visible and play when its visible.
   bool controlVisibiltyPlay;
+
+  /// Set start time of video in milliseconds
+  int? videoStartAt;
+
+  /// With custom action button you can create your own button an get a callback on pressed, double tap, and long press.
+  List<ModernPlayerCustomActionButton>? customActionButtons;
 
   ModernPlayerControlsOptions(
       {this.showControls = true,
@@ -55,7 +61,9 @@ class ModernPlayerControlsOptions {
       this.enableVolumeSlider = true,
       this.enableBrightnessSlider = true,
       this.doubleTapToSeek = true,
-      this.controlVisibiltyPlay = true});
+      this.controlVisibiltyPlay = true,
+      this.videoStartAt,
+      this.customActionButtons});
 }
 
 /// Theme option for Modern Player
@@ -122,4 +130,24 @@ class ModernPlayerProgressSliderTheme {
       this.bufferSliderColor,
       this.thumbColor,
       this.progressTextStyle});
+}
+
+/// Custom action button for Modern Player
+///
+/// With custom action button you can create your own button an get a callback on pressed, double tap, and long press.
+class ModernPlayerCustomActionButton {
+  /// This icon used for action button icon.
+  Icon icon;
+
+  /// You received a callback whenever user press this button.
+  VoidCallback? onPressed;
+
+  /// You received a callback whenever user double tap on this button.
+  VoidCallback? onLongPress;
+
+  /// You received a callback whenever user long press this button.
+  VoidCallback? onDoubleTap;
+
+  ModernPlayerCustomActionButton(
+      {required this.icon, this.onPressed, this.onDoubleTap, this.onLongPress});
 }
