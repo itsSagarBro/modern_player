@@ -14,14 +14,16 @@ class ModernplayerControls extends StatefulWidget {
       required this.viewSize,
       required this.dataSourceType,
       required this.qualityOptions,
-      required this.modernPlayerControlsOptions,
+      required this.controlsOptions,
+      required this.themeOptions,
       required this.onBackPressed});
 
   final VlcPlayerController player;
   final Size viewSize;
   final ModernPlayerType dataSourceType;
   final List<ModernPlayerQualityOptions> qualityOptions;
-  final ModernPlayerControlsOptions modernPlayerControlsOptions;
+  final ModernPlayerControlsOptions controlsOptions;
+  final ModernPlayerThemeOptions themeOptions;
   final VoidCallback onBackPressed;
 
   @override
@@ -56,9 +58,6 @@ class _ModernplayerControlsState extends State<ModernplayerControls> {
 
   Map? _audioTracks;
   Map? _subtitleTracks;
-
-  bool halfAdCalled = false;
-  bool pauseAdCalled = false;
 
   List<String> renders = List.empty(growable: true);
 
@@ -250,7 +249,7 @@ class _ModernplayerControlsState extends State<ModernplayerControls> {
   }
 
   void _onDoubleTap(TapDownDetails details) {
-    if (widget.modernPlayerControlsOptions.doubleTapToSeek) {
+    if (widget.controlsOptions.doubleTapToSeek) {
       if (details.localPosition.dx > widget.viewSize.width / 2) {
         _seekForward();
       } else {
@@ -266,7 +265,7 @@ class _ModernplayerControlsState extends State<ModernplayerControls> {
     if (d.localPosition.dx >
         (widget.viewSize.width / 3 + (widget.viewSize.width / 3))) {
       // right, volume
-      if (widget.modernPlayerControlsOptions.enableVolumeSlider) {
+      if (widget.controlsOptions.enableVolumeSlider) {
         _dragRight = true;
         double volume = _volume ?? (player.value.volume / 200).toDouble();
         setState(() {
@@ -277,7 +276,7 @@ class _ModernplayerControlsState extends State<ModernplayerControls> {
       }
     } else if (d.localPosition.dx < widget.viewSize.width / 3) {
       // left, brightness
-      if (widget.modernPlayerControlsOptions.enableBrightnessSlider) {
+      if (widget.controlsOptions.enableBrightnessSlider) {
         _dragLeft = true;
         ScreenBrightness().current.then((v) {
           setState(() {
@@ -362,8 +361,7 @@ class _ModernplayerControlsState extends State<ModernplayerControls> {
                           children: [
                             Row(
                               children: [
-                                if (widget
-                                    .modernPlayerControlsOptions.showBackbutton)
+                                if (widget.controlsOptions.showBackbutton)
                                   // Back Button
                                   SizedBox(
                                     height: 50,
@@ -377,10 +375,7 @@ class _ModernplayerControlsState extends State<ModernplayerControls> {
                                         shape: RoundedRectangleBorder(
                                             borderRadius:
                                                 BorderRadius.circular(10)),
-                                        child: widget
-                                                .modernPlayerControlsOptions
-                                                .themeOptions
-                                                ?.backIcon ??
+                                        child: widget.themeOptions.backIcon ??
                                             const Icon(
                                               Icons.arrow_back_ios_new_rounded,
                                               color: Colors.white,
@@ -390,7 +385,7 @@ class _ModernplayerControlsState extends State<ModernplayerControls> {
                                   ),
                                 const Spacer(),
                                 // Mute/Unmute
-                                if (widget.modernPlayerControlsOptions.showMute)
+                                if (widget.controlsOptions.showMute)
                                   SizedBox(
                                     height: 50,
                                     width: 50,
@@ -412,14 +407,12 @@ class _ModernplayerControlsState extends State<ModernplayerControls> {
                                             borderRadius:
                                                 BorderRadius.circular(10)),
                                         child: player.value.volume > 0
-                                            ? widget.modernPlayerControlsOptions
-                                                    .themeOptions?.muteIcon ??
+                                            ? widget.themeOptions.muteIcon ??
                                                 const Icon(
                                                   Icons.volume_up_rounded,
                                                   color: Colors.white,
                                                 )
-                                            : widget.modernPlayerControlsOptions
-                                                    .themeOptions?.unmuteIcon ??
+                                            : widget.themeOptions.unmuteIcon ??
                                                 const Icon(
                                                   Icons.volume_off_rounded,
                                                   color: Colors.white,
@@ -428,7 +421,7 @@ class _ModernplayerControlsState extends State<ModernplayerControls> {
                                     ),
                                   ),
                                 // Settings/Menu
-                                if (widget.modernPlayerControlsOptions.showMenu)
+                                if (widget.controlsOptions.showMenu)
                                   SizedBox(
                                     height: 50,
                                     width: 50,
@@ -442,10 +435,7 @@ class _ModernplayerControlsState extends State<ModernplayerControls> {
                                         shape: RoundedRectangleBorder(
                                             borderRadius:
                                                 BorderRadius.circular(10)),
-                                        child: widget
-                                                .modernPlayerControlsOptions
-                                                .themeOptions
-                                                ?.menuIcon ??
+                                        child: widget.themeOptions.menuIcon ??
                                             const Icon(
                                               Icons.settings_rounded,
                                               color: Colors.white,
@@ -459,7 +449,7 @@ class _ModernplayerControlsState extends State<ModernplayerControls> {
                         ),
                       ),
                     ),
-                    if (widget.modernPlayerControlsOptions.showBottomBar)
+                    if (widget.controlsOptions.showBottomBar)
                       _bottomBar(context),
                   ],
                 )
@@ -499,9 +489,7 @@ class _ModernplayerControlsState extends State<ModernplayerControls> {
                 height: 75,
                 width: 75,
                 child: CircularProgressIndicator(
-                  color: widget.modernPlayerControlsOptions.themeOptions
-                          ?.loadingColor ??
-                      Colors.greenAccent,
+                  color: widget.themeOptions.loadingColor ?? Colors.greenAccent,
                   strokeCap: StrokeCap.round,
                 ),
               ),
@@ -583,9 +571,9 @@ class _ModernplayerControlsState extends State<ModernplayerControls> {
             Text(
               getFormattedDuration(
                   _seekPos > 0 ? Duration(seconds: _seekPos) : _currentPos),
-              style: widget.modernPlayerControlsOptions.progressSliderTheme
-                      ?.progressTextStyle ??
-                  const TextStyle(color: Colors.white, fontSize: 12),
+              style:
+                  widget.themeOptions.progressSliderTheme?.progressTextStyle ??
+                      const TextStyle(color: Colors.white, fontSize: 12),
             ),
             const SizedBox(
               width: 10,
@@ -594,17 +582,17 @@ class _ModernplayerControlsState extends State<ModernplayerControls> {
                 child: SliderTheme(
               data: SliderThemeData(
                   trackShape: VideoSliderTrackShape(),
-                  activeTrackColor: widget.modernPlayerControlsOptions
-                          .progressSliderTheme?.activeSliderColor ??
+                  activeTrackColor: widget.themeOptions.progressSliderTheme
+                          ?.activeSliderColor ??
                       Colors.greenAccent,
-                  secondaryActiveTrackColor: widget.modernPlayerControlsOptions
+                  secondaryActiveTrackColor: widget.themeOptions
                           .progressSliderTheme?.bufferSliderColor ??
                       Colors.white,
-                  thumbColor: widget.modernPlayerControlsOptions
-                          .progressSliderTheme?.thumbColor ??
-                      Colors.white,
-                  inactiveTrackColor: widget.modernPlayerControlsOptions
-                          .progressSliderTheme?.inactiveSliderColor ??
+                  thumbColor:
+                      widget.themeOptions.progressSliderTheme?.thumbColor ??
+                          Colors.white,
+                  inactiveTrackColor: widget.themeOptions.progressSliderTheme
+                          ?.inactiveSliderColor ??
                       Colors.white60,
                   thumbShape: const RoundSliderThumbShape(
                       enabledThumbRadius: 7, pressedElevation: 10)),
@@ -628,9 +616,9 @@ class _ModernplayerControlsState extends State<ModernplayerControls> {
             ),
             Text(
               "-${getFormattedDuration(_seekPos > 0 ? Duration(seconds: duration - _seekPos) : remaining)}",
-              style: widget.modernPlayerControlsOptions.progressSliderTheme
-                      ?.progressTextStyle ??
-                  const TextStyle(color: Colors.white, fontSize: 12),
+              style:
+                  widget.themeOptions.progressSliderTheme?.progressTextStyle ??
+                      const TextStyle(color: Colors.white, fontSize: 12),
             ),
             const SizedBox(
               width: 5,
@@ -978,15 +966,13 @@ class _ModernplayerControlsState extends State<ModernplayerControls> {
   }
 
   Color getMenuBackgroundColor() {
-    return widget
-            .modernPlayerControlsOptions.themeOptions?.menuBackgroundColor ??
+    return widget.themeOptions.menuBackgroundColor ??
         const Color.fromARGB(255, 20, 20, 20);
   }
 
   Color getIconsBackgroundColor() {
     Color? color =
-        widget.modernPlayerControlsOptions.themeOptions?.backgroundColor ??
-            Colors.black.withOpacity(.75);
+        widget.themeOptions.backgroundColor ?? Colors.black.withOpacity(.75);
     return color;
   }
 }

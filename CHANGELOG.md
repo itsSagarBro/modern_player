@@ -1,5 +1,9 @@
 ## 0.0.2
 
+* Moved theme option from control option to modern player
+
+## 0.0.2
+
 * Fixed seekTo problem when changing quality
 * Fixed packages
 * Fixed quality change in file data source

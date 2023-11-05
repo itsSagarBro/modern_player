@@ -46,12 +46,6 @@ class ModernPlayerControlsOptions {
   /// When enabled, Video player will automatically gets paused when it is not visible and play when itss visible.
   bool controlVisibiltyPlay;
 
-  /// Control theme of controls.
-  ModernPlayerThemeOptions? themeOptions;
-
-  /// Control theme of progress slider theme.
-  ModernPlayerProgressSliderTheme? progressSliderTheme;
-
   ModernPlayerControlsOptions(
       {this.showControls = true,
       this.showMenu = true,
@@ -61,9 +55,7 @@ class ModernPlayerControlsOptions {
       this.enableVolumeSlider = true,
       this.enableBrightnessSlider = true,
       this.doubleTapToSeek = true,
-      this.controlVisibiltyPlay = true,
-      this.themeOptions,
-      this.progressSliderTheme});
+      this.controlVisibiltyPlay = true});
 }
 
 /// Theme option for Modern Player
@@ -91,6 +83,9 @@ class ModernPlayerThemeOptions {
   /// Icon for back button.
   Icon? backIcon;
 
+  /// Control theme of progress slider theme.
+  ModernPlayerProgressSliderTheme? progressSliderTheme;
+
   ModernPlayerThemeOptions(
       {this.backgroundColor,
       this.menuBackgroundColor,
@@ -98,7 +93,8 @@ class ModernPlayerThemeOptions {
       this.menuIcon,
       this.muteIcon,
       this.unmuteIcon,
-      this.backIcon});
+      this.backIcon,
+      this.progressSliderTheme});
 }
 
 /// Proggress slider theme option for Modern Player

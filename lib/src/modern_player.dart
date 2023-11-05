@@ -12,17 +12,20 @@ class ModernPlayer extends StatefulWidget {
       {required this.qualityOptions,
       required this.type,
       this.controlsOptions,
+      this.themeOptions,
       this.onBackPressed});
 
   static Widget createPlayer(
       {required List<ModernPlayerQualityOptions> qualityOptions,
       ModernPlayerType type = ModernPlayerType.network,
       ModernPlayerControlsOptions? controlsOptions,
+      ModernPlayerThemeOptions? themeOptions,
       VoidCallback? onBackPressed}) {
     return ModernPlayer._(
       qualityOptions: qualityOptions,
       type: type,
       controlsOptions: controlsOptions,
+      themeOptions: themeOptions,
       onBackPressed: onBackPressed,
     );
   }
@@ -35,6 +38,9 @@ class ModernPlayer extends StatefulWidget {
 
   /// Modern player controls option.
   final ModernPlayerControlsOptions? controlsOptions;
+
+  /// Control theme of controls.
+  final ModernPlayerThemeOptions? themeOptions;
 
   /// Callback when user pressed back button of controls.
   final VoidCallback? onBackPressed;
@@ -132,8 +138,9 @@ class _ModernPlayerState extends State<ModernPlayer> {
             player: _playerController,
             qualityOptions: widget.qualityOptions,
             dataSourceType: widget.type,
-            modernPlayerControlsOptions:
+            controlsOptions:
                 widget.controlsOptions ?? ModernPlayerControlsOptions(),
+            themeOptions: widget.themeOptions ?? ModernPlayerThemeOptions(),
             viewSize: Size(MediaQuery.of(context).size.width,
                 MediaQuery.of(context).size.height),
             onBackPressed: () {

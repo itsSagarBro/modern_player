@@ -55,23 +55,14 @@ class _MyHomePageState extends State<MyHomePage> {
                         url:
                             "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4")
                   ],
-                  controlsOptions: ModernPlayerControlsOptions(
-                      showControls: true,
-                      doubleTapToSeek: false,
-                      showMenu: true,
-                      showMute: false,
-                      showBackbutton: false,
-                      enableVolumeSlider: true,
-                      enableBrightnessSlider: true,
-                      showBottomBar: true,
-                      themeOptions: ModernPlayerThemeOptions(
-                          backgroundColor: Colors.black,
-                          menuBackgroundColor: Colors.black,
-                          loadingColor: Colors.white,
-                          menuIcon: const Icon(
-                            Icons.settings,
-                            color: Colors.white,
-                          )),
+                  themeOptions: ModernPlayerThemeOptions(
+                      backgroundColor: Colors.black,
+                      menuBackgroundColor: Colors.black,
+                      loadingColor: Colors.white,
+                      menuIcon: const Icon(
+                        Icons.settings,
+                        color: Colors.white,
+                      ),
                       progressSliderTheme: ModernPlayerProgressSliderTheme(
                           activeSliderColor: Colors.blue,
                           inactiveSliderColor: Colors.white70,
@@ -80,7 +71,17 @@ class _MyHomePageState extends State<MyHomePage> {
                           progressTextStyle: const TextStyle(
                               fontWeight: FontWeight.w400,
                               color: Colors.white,
-                              fontSize: 18)))),
+                              fontSize: 18))),
+                  controlsOptions: ModernPlayerControlsOptions(
+                    showControls: true,
+                    doubleTapToSeek: false,
+                    showMenu: true,
+                    showMute: false,
+                    showBackbutton: false,
+                    enableVolumeSlider: true,
+                    enableBrightnessSlider: true,
+                    showBottomBar: true,
+                  )),
             )
           ],
         ),
