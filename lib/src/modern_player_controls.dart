@@ -149,8 +149,14 @@ class _ModernplayerControlsState extends State<ModernplayerControls> {
       await player
           .setMediaFromNetwork(qualityOptions.url,
               autoPlay: true, hwAcc: HwAcc.full)
-          .whenComplete(() {
-        _seekTo(lastPosition);
+          .whenComplete(() async {
+        await player.seekTo(lastPosition).then((value) {
+          player.play();
+          setState(() {
+            _currentPos = lastPosition;
+            _currentQuality = qualityOptions;
+          });
+        });
       });
     });
   }

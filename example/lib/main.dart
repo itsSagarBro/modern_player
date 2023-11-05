@@ -43,13 +43,17 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             SizedBox(
-              height: 200,
+              height: 250,
               child: ModernPlayer.createPlayer(
                   qualityOptions: [
                     ModernPlayerQualityOptions(
-                        name: "new",
+                        name: "480p",
                         url:
-                            "https://us-central-1.fybeobjects.com/0cacdc5a6e4b4c49822552f72d1463bd:cinevista/Trailers/Gold%20Theatrical%20Trailer%20_%20Akshay%20Kumar%20_%20Mouni%20_%20Kunal%20_%20Amit%20_%20Vineet%20_%20Sunny%20_%2015th%20August%202018.mp4")
+                            "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4"),
+                    ModernPlayerQualityOptions(
+                        name: "720p",
+                        url:
+                            "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4")
                   ],
                   controlsOptions: ModernPlayerControlsOptions(
                       showControls: true,
