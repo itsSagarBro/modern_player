@@ -131,6 +131,7 @@ class _ModernPlayerState extends State<ModernPlayer> {
           ModernplayerControls(
             player: _playerController,
             qualityOptions: widget.qualityOptions,
+            dataSourceType: widget.type,
             modernPlayerControlsOptions:
                 widget.controlsOptions ?? ModernPlayerControlsOptions(),
             viewSize: Size(MediaQuery.of(context).size.width,

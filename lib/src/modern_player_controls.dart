@@ -1,9 +1,10 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
-import 'package:modern_player/src/modern_player_options.dart';
+import 'package:modern_player/modern_player.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 
 class ModernplayerControls extends StatefulWidget {
@@ -11,12 +12,14 @@ class ModernplayerControls extends StatefulWidget {
       {super.key,
       required this.player,
       required this.viewSize,
+      required this.dataSourceType,
       required this.qualityOptions,
       required this.modernPlayerControlsOptions,
       required this.onBackPressed});
 
   final VlcPlayerController player;
   final Size viewSize;
+  final ModernPlayerType dataSourceType;
   final List<ModernPlayerQualityOptions> qualityOptions;
   final ModernPlayerControlsOptions modernPlayerControlsOptions;
   final VoidCallback onBackPressed;
@@ -146,18 +149,33 @@ class _ModernplayerControlsState extends State<ModernplayerControls> {
         _isLoading = true;
       });
 
-      await player
-          .setMediaFromNetwork(qualityOptions.url,
-              autoPlay: true, hwAcc: HwAcc.full)
-          .whenComplete(() async {
-        await player.seekTo(lastPosition).then((value) {
-          player.play();
-          setState(() {
-            _currentPos = lastPosition;
-            _currentQuality = qualityOptions;
+      if (widget.dataSourceType == ModernPlayerType.network) {
+        await player
+            .setMediaFromNetwork(qualityOptions.url,
+                autoPlay: true, hwAcc: HwAcc.full)
+            .whenComplete(() async {
+          await player.seekTo(lastPosition).then((value) {
+            player.play();
+            setState(() {
+              _currentPos = lastPosition;
+              _currentQuality = qualityOptions;
+            });
           });
         });
-      });
+      } else {
+        await player
+            .setMediaFromFile(File(qualityOptions.url),
+                autoPlay: true, hwAcc: HwAcc.full)
+            .whenComplete(() async {
+          await player.seekTo(lastPosition).then((value) {
+            player.play();
+            setState(() {
+              _currentPos = lastPosition;
+              _currentQuality = qualityOptions;
+            });
+          });
+        });
+      }
     });
   }
 

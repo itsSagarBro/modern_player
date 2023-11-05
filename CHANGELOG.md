@@ -1,3 +1,9 @@
+## 0.0.2
+
+* Fixed seekTo problem when changing quality
+* Fixed packages
+* Fixed quality change in file data source
+
 ## 0.0.1
 
 * Double tap to seek (10 sec)
