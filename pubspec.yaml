@@ -1,7 +1,7 @@
 name: modern_player
-description: A new Flutter package project.
+description: Enhance your video playback experience with modern_player—a feature-rich Flutter package for flutter_vlc_player. Enjoy auto-hiding controls, double-tap to seek, customizable UI, automatic subtitle and audio track detection, and more on both Android and iOS.
 version: 0.0.1
-homepage:
+homepage: https://github.com/itsSagarBro/modern_player
 publish_to: 'none'
 
 environment:

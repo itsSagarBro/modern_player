@@ -38,7 +38,7 @@ class ModernPlayerControlsOptions {
   bool enableVolumeSlider;
 
   /// Toggle slide to control brigthness.
-  bool enableBrigthnessSlider;
+  bool enableBrightnessSlider;
 
   /// Toggle double tap to seek.
   bool doubleTapToSeek;
@@ -59,7 +59,7 @@ class ModernPlayerControlsOptions {
       this.showBackbutton = true,
       this.showBottomBar = true,
       this.enableVolumeSlider = true,
-      this.enableBrigthnessSlider = true,
+      this.enableBrightnessSlider = true,
       this.doubleTapToSeek = true,
       this.controlVisibiltyPlay = true,
       this.themeOptions,

@@ -256,7 +256,7 @@ class _ModernplayerControlsState extends State<ModernplayerControls> {
       }
     } else if (d.localPosition.dx < widget.viewSize.width / 3) {
       // left, brightness
-      if (widget.modernPlayerControlsOptions.enableBrigthnessSlider) {
+      if (widget.modernPlayerControlsOptions.enableBrightnessSlider) {
         _dragLeft = true;
         ScreenBrightness().current.then((v) {
           setState(() {
