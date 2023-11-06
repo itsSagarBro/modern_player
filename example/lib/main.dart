@@ -40,6 +40,8 @@ class _MyHomePageState extends State<MyHomePage> {
         Icons.settings,
         color: Colors.white,
       ),
+      volumeSlidertheme: ModernPlayerToastSliderThemeOption(
+          sliderColor: Colors.blue, iconColor: Colors.white),
       progressSliderTheme: ModernPlayerProgressSliderTheme(
           activeSliderColor: Colors.blue,
           inactiveSliderColor: Colors.white70,
@@ -91,6 +93,8 @@ class _MyHomePageState extends State<MyHomePage> {
                             "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4"),
                   ],
                   sourceType: ModernPlayerSourceType.network,
+                  subtitles: [],
+                  audioTracks: [],
                   themeOptions: themeOptions,
                   controlsOptions: controlsOptions),
             )

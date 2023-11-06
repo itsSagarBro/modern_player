@@ -151,8 +151,6 @@ To enable multi-window support in your Android application, you need to make cha
 </manifest>
 ```
 
-<br>
-
 ## Using it
 
 ```dart
@@ -173,34 +171,81 @@ final modernPlayerWidget = SizedBox(
 
 ## Options
 
-Modern player has some option to adjust and theme your controls. By default all button and features are enabled.
+modern_player has some basic option to adjust video player.
+
+To add options, you can add these lines to your `modern_player`
+
+```dart
+  options: ModernPlayerOptions(
+      controlVisibiltyPlay: true,
+      videoStartAt: 5000 // in milliseconds
+    )
+```
+### Controls Options
+
+modern_player has some option to adjust and theme your controls. By default all button and features are enabled.
 
 To enable disable button, you can add these lines to your `modern_player`
 
 ```dart
   controlsOptions: ModernPlayerControlsOptions(
       showControls: true,
-      doubleTapToSeek: false,
+      doubleTapToSeek: true,
       showMenu: true,
       showMute: false,
       showBackbutton: false,
       enableVolumeSlider: true,
-      enableBrigthnessSlider: true,
-      showBottomBar: true)
+      enableBrightnessSlider: true,
+      showBottomBar: true,
+      customActionButtons: [
+        ModernPlayerCustomActionButton(
+          icon: const Icon(
+            Icons.info_rounded,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            // On Pressed
+          },
+        ),
+      ])
 ```
+### Custom Action Buttons
+
+Empower your app's users with modern_player's customizable action buttons. Add custom buttons to control, navigate, or interact with your video content, and define the callbacks to handle these actions, offering a truly tailored video experience.
+
+To add custom buttons, you can add these lines to your `controls options`
+
+```dart
+  customActionButtons: [
+      ModernPlayerCustomActionButton(
+        icon: const Icon(
+          Icons.info_rounded,
+          color: Colors.white,
+        ),
+        onPressed: () {
+          // On Pressed
+        },
+      ),
+    ]
+```
+
 ### Theme Customization
 
-To customize theme or colors of your player, you can add these lines to your `controlsOptions`
+Tailor your video playback experience to match your app's unique style with modern_player. Customize the theme of your controls, choosing colors, fonts, and layouts that seamlessly integrate with your app's design for a polished, cohesive look.
+
+To customize theme or colors of your player, you can add these lines to your `modern_player`
 
 ```dart
   themeOptions: ModernPlayerThemeOptions(
       backgroundColor: Colors.black,
       menuBackgroundColor: Colors.black,
-      loadingColor: Colors.white,
+      loadingColor: Colors.blue,
       menuIcon: const Icon(
         Icons.settings,
         color: Colors.white,
-      ))
+      ),
+      volumeSlidertheme: ModernPlayerToastSliderThemeOption(
+          sliderColor: Colors.blue, iconColor: Colors.white))
 ```
 To customize theme of progress slider, you can add these lines to your `controlsOptions`
 
@@ -214,6 +259,54 @@ To customize theme of progress slider, you can add these lines to your `controls
           fontWeight: FontWeight.w400,
           color: Colors.white,
           fontSize: 18))
+```
+
+## Subtitles
+
+modern_player simplifies your video viewing experience with auto-detected subtitles for supported formats. And for other formats, easily add subtitles from the internet or local files, ensuring that nothing gets lost in translation.
+
+To add subtitles, you can add these lines to your `modern_player`
+
+```dart
+  // For add subtitle from internet.
+  subtitles: [
+    ModernPlayerSubtitleOptions(
+        source:
+            "url_of_subtitle",
+        sourceType: ModernPlayerSubtitleSourceType.network)
+  ]
+  
+  // For add subtitle from local file.
+  subtitles: [
+    ModernPlayerSubtitleOptions(
+        source:
+            "path_of_subtitle",
+        sourceType: ModernPlayerSubtitleSourceType.file)
+  ]
+```
+
+## Audio Tracks
+
+With modern_player, you're in control of your audio experience. Add custom audio tracks to your videos, switch between languages or audio sources on the fly, and enjoy a personalized listening experience like never before.
+
+To add audio tracks, you can add these lines to your `modern_player`
+
+```dart
+  // For add audio track from internet.
+  audioTracks: [
+    ModernPlayerAudioTrackOptions(
+        source:
+            "url_of_audio_track",
+        sourceType: ModernPlayerAudioSourceType.network)
+  ]
+  
+  // For add audio track from local file.
+  audioTracks: [
+    ModernPlayerAudioTrackOptions(
+        source:
+            "path_of_audio_track",
+        sourceType: ModernPlayerAudioSourceType.file)
+  ]
 ```
 
 ## Example
