@@ -1,10 +1,32 @@
-/// Type for Modern Player
+/// Source Type for Modern Player
 ///
 /// This can define type of data source of Modern Player.
-enum ModernPlayerType {
-  /// The video was downloaded from the internet.
+enum ModernPlayerSourceType {
+  /// The video is downloaded from the internet.
   network,
 
-  /// The video was loaded off of the local filesystem.
+  /// The video is load from the local filesystem.
+  file
+}
+
+/// Source Type for Modern Player Subtitle
+///
+/// This can define type of data source of Modern Player Subtitle.
+enum ModernPlayerSubtitleSourceType {
+  /// The subtitle file is downloaded from the internet.
+  network,
+
+  /// The subtitle file is load from the local filesystem.
+  file
+}
+
+/// Source Type for Modern Player Audio
+///
+/// This can define type of data source of Modern Player Audio.
+enum ModernPlayerAudioSourceType {
+  /// The audio file is downloaded from the internet.
+  network,
+
+  /// The audio file is load from the local filesystem.
   file
 }

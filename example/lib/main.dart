@@ -83,12 +83,16 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             SizedBox(
               height: 250,
-              child: ModernPlayer.createPlayer(qualityOptions: [
-                ModernPlayerQualityOptions(
-                    name: "Default",
-                    url:
-                        "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4"),
-              ], themeOptions: themeOptions, controlsOptions: controlsOptions),
+              child: ModernPlayer.createPlayer(
+                  qualityOptions: [
+                    ModernPlayerQualityOptions(
+                        name: "Default",
+                        url:
+                            "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4"),
+                  ],
+                  sourceType: ModernPlayerSourceType.network,
+                  themeOptions: themeOptions,
+                  controlsOptions: controlsOptions),
             )
           ],
         ),

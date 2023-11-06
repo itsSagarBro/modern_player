@@ -4,6 +4,9 @@
 * Added videoStartAt in controls option
 * Added playback speed controls in menu
 * Added custom action button support in controls option
+* Added manual subtitle suopprt
+* Added manual audio tracks suopprt
+* Added customization for brightness and volume slider theme
 
 ## 0.0.2
 

@@ -5,10 +5,12 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:modern_player/modern_player.dart';
+import 'package:modern_player/src/modern_player_options.dart';
+import 'package:modern_player/src/modern_players_enums.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 
-class ModernplayerControls extends StatefulWidget {
-  const ModernplayerControls(
+class ModernPlayerControls extends StatefulWidget {
+  const ModernPlayerControls(
       {super.key,
       required this.player,
       required this.viewSize,
@@ -20,17 +22,17 @@ class ModernplayerControls extends StatefulWidget {
 
   final VlcPlayerController player;
   final Size viewSize;
-  final ModernPlayerType dataSourceType;
+  final ModernPlayerSourceType dataSourceType;
   final List<ModernPlayerQualityOptions> qualityOptions;
   final ModernPlayerControlsOptions controlsOptions;
   final ModernPlayerThemeOptions themeOptions;
   final VoidCallback onBackPressed;
 
   @override
-  State<ModernplayerControls> createState() => _ModernplayerControlsState();
+  State<ModernPlayerControls> createState() => _ModernPlayerControlsState();
 }
 
-class _ModernplayerControlsState extends State<ModernplayerControls> {
+class _ModernPlayerControlsState extends State<ModernPlayerControls> {
   VlcPlayerController get player => widget.player;
 
   Timer? _statelessTimer;
@@ -161,7 +163,7 @@ class _ModernplayerControlsState extends State<ModernplayerControls> {
         _isLoading = true;
       });
 
-      if (widget.dataSourceType == ModernPlayerType.network) {
+      if (widget.dataSourceType == ModernPlayerSourceType.network) {
         await player
             .setMediaFromNetwork(qualityOptions.url,
                 autoPlay: true, hwAcc: HwAcc.full)
@@ -515,9 +517,27 @@ class _ModernplayerControlsState extends State<ModernplayerControls> {
                                         ? _VideoControlsSliderToast(
                                             _brightness!,
                                             1,
-                                            _valController.stream)
+                                            _valController.stream,
+                                            widget.themeOptions
+                                                    .brightnessSlidertheme ??
+                                                ModernPlayerToastSliderThemeOption(
+                                                    sliderColor: Colors.blue),
+                                            widget.themeOptions
+                                                    .volumeSlidertheme ??
+                                                ModernPlayerToastSliderThemeOption(
+                                                    sliderColor: Colors.blue))
                                         : _VideoControlsSliderToast(
-                                            _volume!, 0, _valController.stream),
+                                            _volume!,
+                                            0,
+                                            _valController.stream,
+                                            widget.themeOptions
+                                                    .brightnessSlidertheme ??
+                                                ModernPlayerToastSliderThemeOption(
+                                                    sliderColor: Colors.blue),
+                                            widget.themeOptions
+                                                    .volumeSlidertheme ??
+                                                ModernPlayerToastSliderThemeOption(
+                                                    sliderColor: Colors.blue)),
                                   )
                                 : const SizedBox.shrink())
                       ],
@@ -721,7 +741,7 @@ class _ModernplayerControlsState extends State<ModernplayerControls> {
               child: Row(
                 children: [
                   const Icon(
-                    Icons.settings_outlined,
+                    Icons.speed_rounded,
                     color: Colors.white,
                   ),
                   const SizedBox(
@@ -1129,8 +1149,11 @@ class _VideoControlsSliderToast extends StatefulWidget {
   // type 0 volume
   // type 1 screen brightness
   final int type;
+  final ModernPlayerToastSliderThemeOption volumeSliderTheme;
+  final ModernPlayerToastSliderThemeOption brightnessSliderTheme;
 
-  const _VideoControlsSliderToast(this.initial, this.type, this.emitter);
+  const _VideoControlsSliderToast(this.initial, this.type, this.emitter,
+      this.brightnessSliderTheme, this.volumeSliderTheme);
 
   @override
   _VideoControlsSliderToastState createState() =>
@@ -1160,45 +1183,97 @@ class _VideoControlsSliderToastState extends State<_VideoControlsSliderToast> {
 
   @override
   Widget build(BuildContext context) {
-    IconData iconData;
     final type = widget.type;
-    if (value <= 0) {
-      iconData = type == 0 ? Icons.volume_mute : Icons.brightness_low;
-    } else if (value < 0.5) {
-      iconData = type == 0 ? Icons.volume_down : Icons.brightness_medium;
-    } else {
-      iconData = type == 0 ? Icons.volume_up : Icons.brightness_high;
-    }
 
-    return Align(
-      alignment: const Alignment(0, -0.4),
-      child: Card(
-        color: Colors.black.withOpacity(.5),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Icon(
-                iconData,
-                color: Colors.white,
-              ),
-              const SizedBox(
-                width: 4,
-              ),
-              SizedBox(
-                width: 100,
-                height: 1.5,
-                child: LinearProgressIndicator(
-                  value: value,
-                  backgroundColor: Colors.white60,
-                  valueColor: const AlwaysStoppedAnimation(Colors.greenAccent),
+    if (type == 0) {
+      // Volume
+      IconData iconData;
+      if (value <= 0) {
+        iconData = widget.volumeSliderTheme.unfilledIcon ?? Icons.volume_mute;
+      } else if (value < 0.5) {
+        iconData = widget.volumeSliderTheme.halfFilledIcon ?? Icons.volume_down;
+      } else {
+        iconData = widget.volumeSliderTheme.filledIcon ?? Icons.volume_up;
+      }
+
+      return Align(
+        alignment: const Alignment(0, -0.4),
+        child: Card(
+          color: widget.volumeSliderTheme.backgroundColor ??
+              Colors.black.withOpacity(.5),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Icon(
+                  iconData,
+                  color: widget.volumeSliderTheme.iconColor ?? Colors.white,
                 ),
-              ),
-            ],
+                const SizedBox(
+                  width: 4,
+                ),
+                SizedBox(
+                  width: 100,
+                  height: 1.5,
+                  child: LinearProgressIndicator(
+                    value: value,
+                    backgroundColor: Colors.white60,
+                    valueColor: AlwaysStoppedAnimation(
+                        widget.volumeSliderTheme.sliderColor),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+    } else {
+      // Brightness
+      IconData iconData;
+      if (value <= 0) {
+        iconData =
+            widget.brightnessSliderTheme.unfilledIcon ?? Icons.brightness_low;
+      } else if (value < 0.5) {
+        iconData = widget.brightnessSliderTheme.halfFilledIcon ??
+            Icons.brightness_medium;
+      } else {
+        iconData =
+            widget.brightnessSliderTheme.filledIcon ?? Icons.brightness_high;
+      }
+
+      return Align(
+        alignment: const Alignment(0, -0.4),
+        child: Card(
+          color: widget.brightnessSliderTheme.backgroundColor ??
+              Colors.black.withOpacity(.5),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Icon(
+                  iconData,
+                  color: widget.brightnessSliderTheme.iconColor ?? Colors.white,
+                ),
+                const SizedBox(
+                  width: 4,
+                ),
+                SizedBox(
+                  width: 100,
+                  height: 1.5,
+                  child: LinearProgressIndicator(
+                    value: value,
+                    backgroundColor: Colors.white60,
+                    valueColor: AlwaysStoppedAnimation(
+                        widget.brightnessSliderTheme.sliderColor),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
   }
 }

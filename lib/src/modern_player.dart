@@ -16,7 +16,10 @@ import 'package:visibility_detector/visibility_detector.dart';
 class ModernPlayer extends StatefulWidget {
   const ModernPlayer._(
       {required this.qualityOptions,
-      required this.type,
+      required this.sourceType,
+      required this.subtitles,
+      required this.audioTracks,
+      this.options,
       this.controlsOptions,
       this.themeOptions,
       this.onBackPressed});
@@ -25,7 +28,18 @@ class ModernPlayer extends StatefulWidget {
   final List<ModernPlayerQualityOptions> qualityOptions;
 
   /// Type of player. It is network player or file player.
-  final ModernPlayerType type;
+  final ModernPlayerSourceType sourceType;
+
+  /// Modern player can detect subtitle from the video on supported formats like .mkv.
+  ///
+  /// But if you wish to add subtitle from [file] or [network], you can use this [subtitles].
+  final List<ModernPlayerSubtitleOptions> subtitles;
+
+  /// If you wish to add audio from [file] or [network], you can use this [audioTracks].
+  final List<ModernPlayerAudioTrackOptions> audioTracks;
+
+  // Modern player options gives you some basic controls for video
+  final ModernPlayerOptions? options;
 
   /// Modern player controls option.
   final ModernPlayerControlsOptions? controlsOptions;
@@ -38,13 +52,19 @@ class ModernPlayer extends StatefulWidget {
 
   static Widget createPlayer(
       {required List<ModernPlayerQualityOptions> qualityOptions,
-      ModernPlayerType type = ModernPlayerType.network,
+      required ModernPlayerSourceType sourceType,
+      List<ModernPlayerSubtitleOptions>? subtitles,
+      List<ModernPlayerAudioTrackOptions>? audioTracks,
+      ModernPlayerOptions? options,
       ModernPlayerControlsOptions? controlsOptions,
       ModernPlayerThemeOptions? themeOptions,
       VoidCallback? onBackPressed}) {
     return ModernPlayer._(
       qualityOptions: qualityOptions,
-      type: type,
+      sourceType: sourceType,
+      subtitles: subtitles ?? [],
+      audioTracks: audioTracks ?? [],
+      options: options,
       controlsOptions: controlsOptions,
       themeOptions: themeOptions,
       onBackPressed: onBackPressed,
@@ -59,7 +79,6 @@ class _ModernPlayerState extends State<ModernPlayer> {
   late VlcPlayerController _playerController;
 
   bool isDisposed = false;
-  bool isPushed = false;
 
   double visibilityFraction = 1;
 
@@ -67,7 +86,7 @@ class _ModernPlayerState extends State<ModernPlayer> {
   void initState() {
     super.initState();
 
-    if (widget.type == ModernPlayerType.network) {
+    if (widget.sourceType == ModernPlayerSourceType.network) {
       _playerController = VlcPlayerController.network(
           widget.qualityOptions.first.url,
           autoPlay: true,
@@ -90,13 +109,51 @@ class _ModernPlayerState extends State<ModernPlayer> {
   }
 
   void _onInitialize() async {
-    if (widget.controlsOptions?.videoStartAt != null) {
+    _videoStartAt();
+    _addSubtitles();
+    _addAudioTracks();
+  }
+
+  void _videoStartAt() async {
+    if (widget.options?.videoStartAt != null) {
       do {
         await Future.delayed(const Duration(milliseconds: 100));
       } while (_playerController.value.playingState != PlayingState.playing);
 
-      await _playerController.seekTo(
-          Duration(milliseconds: widget.controlsOptions!.videoStartAt!));
+      await _playerController
+          .seekTo(Duration(milliseconds: widget.options!.videoStartAt!));
+    }
+  }
+
+  void _addSubtitles() async {
+    for (var subtitle in widget.subtitles) {
+      if (subtitle.sourceType == ModernPlayerSubtitleSourceType.file) {
+        if (await File(subtitle.source).exists()) {
+          _playerController.addSubtitleFromFile(File(subtitle.source),
+              isSelected: subtitle.isSelected);
+        } else {
+          throw Exception("${subtitle.source} is not exist in local file.");
+        }
+      } else {
+        _playerController.addSubtitleFromNetwork(subtitle.source,
+            isSelected: subtitle.isSelected);
+      }
+    }
+  }
+
+  void _addAudioTracks() async {
+    for (var audio in widget.audioTracks) {
+      if (audio.sourceType == ModernPlayerAudioSourceType.file) {
+        if (await File(audio.source).exists()) {
+          _playerController.addAudioFromFile(File(audio.source),
+              isSelected: audio.isSelected);
+        } else {
+          throw Exception("${audio.source} is not exist in local file.");
+        }
+      } else {
+        _playerController.addAudioFromNetwork(audio.source,
+            isSelected: audio.isSelected);
+      }
     }
   }
 
@@ -112,11 +169,11 @@ class _ModernPlayerState extends State<ModernPlayer> {
   }
 
   void _checkPlayPause() {
-    if (visibilityFraction == 0 && !isPushed) {
+    if (visibilityFraction == 0) {
       if (_playerController.value.isInitialized && !isDisposed) {
         _playerController.pause();
       }
-    } else if (!isPushed) {
+    } else {
       if (_playerController.value.isInitialized && !isDisposed) {
         _playerController.play();
       }
@@ -144,7 +201,7 @@ class _ModernPlayerState extends State<ModernPlayer> {
         VisibilityDetector(
           key: const ValueKey<int>(0),
           onVisibilityChanged: (info) {
-            if (widget.controlsOptions?.controlVisibiltyPlay ?? true) {
+            if (widget.options?.controlVisibiltyPlay ?? true) {
               _onChangeVisibility(info.visibleFraction);
             }
           },
@@ -154,10 +211,10 @@ class _ModernPlayerState extends State<ModernPlayer> {
           ),
         ),
         if (widget.controlsOptions?.showControls ?? true)
-          ModernplayerControls(
+          ModernPlayerControls(
             player: _playerController,
             qualityOptions: widget.qualityOptions,
-            dataSourceType: widget.type,
+            dataSourceType: widget.sourceType,
             controlsOptions:
                 widget.controlsOptions ?? ModernPlayerControlsOptions(),
             themeOptions: widget.themeOptions ?? ModernPlayerThemeOptions(),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:modern_player/src/modern_players_enums.dart';
 
 /// List of video for Modern Player
 ///
@@ -13,6 +14,20 @@ class ModernPlayerQualityOptions {
   String url;
 
   ModernPlayerQualityOptions({required this.name, required this.url});
+}
+
+/// Modern Player Option gies some basic controls for video.
+class ModernPlayerOptions {
+  /// When enabled, Video player will automatically gets paused when it is not visible and play when its visible.
+  bool controlVisibiltyPlay;
+
+  /// Set start time of video in milliseconds
+  int? videoStartAt;
+
+  ModernPlayerOptions({
+    this.controlVisibiltyPlay = true,
+    this.videoStartAt,
+  });
 }
 
 /// Controls option for Modern Player
@@ -43,12 +58,6 @@ class ModernPlayerControlsOptions {
   /// Toggle double tap to seek.
   bool doubleTapToSeek;
 
-  /// When enabled, Video player will automatically gets paused when it is not visible and play when its visible.
-  bool controlVisibiltyPlay;
-
-  /// Set start time of video in milliseconds
-  int? videoStartAt;
-
   /// With custom action button you can create your own button an get a callback on pressed, double tap, and long press.
   List<ModernPlayerCustomActionButton>? customActionButtons;
 
@@ -61,8 +70,6 @@ class ModernPlayerControlsOptions {
       this.enableVolumeSlider = true,
       this.enableBrightnessSlider = true,
       this.doubleTapToSeek = true,
-      this.controlVisibiltyPlay = true,
-      this.videoStartAt,
       this.customActionButtons});
 }
 
@@ -91,8 +98,14 @@ class ModernPlayerThemeOptions {
   /// Icon for back button.
   Icon? backIcon;
 
-  /// Control theme of progress slider theme.
+  /// Customize theme of progress slider theme.
   ModernPlayerProgressSliderTheme? progressSliderTheme;
+
+  /// Customize theme of brightness slider.
+  ModernPlayerToastSliderThemeOption? brightnessSlidertheme;
+
+  /// Customize theme of volume slider.
+  ModernPlayerToastSliderThemeOption? volumeSlidertheme;
 
   ModernPlayerThemeOptions(
       {this.backgroundColor,
@@ -102,7 +115,9 @@ class ModernPlayerThemeOptions {
       this.muteIcon,
       this.unmuteIcon,
       this.backIcon,
-      this.progressSliderTheme});
+      this.progressSliderTheme,
+      this.brightnessSlidertheme,
+      this.volumeSlidertheme});
 }
 
 /// Proggress slider theme option for Modern Player
@@ -132,6 +147,37 @@ class ModernPlayerProgressSliderTheme {
       this.progressTextStyle});
 }
 
+/// Toast slider theme option for Modern Player
+///
+/// With toast slider theme option, you can customize brightness and volume slider in player.
+class ModernPlayerToastSliderThemeOption {
+  /// Give slider color.
+  Color sliderColor;
+
+  /// Give slider color.
+  Color? iconColor;
+
+  /// Give toast background color.
+  Color? backgroundColor;
+
+  /// This icon active when slider value is 0%.
+  IconData? unfilledIcon;
+
+  /// This icon active when slider value is 50%.
+  IconData? halfFilledIcon;
+
+  /// This icon active when slider value is 1000%.
+  IconData? filledIcon;
+
+  ModernPlayerToastSliderThemeOption(
+      {required this.sliderColor,
+      this.iconColor,
+      this.backgroundColor,
+      this.unfilledIcon,
+      this.halfFilledIcon,
+      this.filledIcon});
+}
+
 /// Custom action button for Modern Player
 ///
 /// With custom action button you can create your own button an get a callback on pressed, double tap, and long press.
@@ -150,4 +196,46 @@ class ModernPlayerCustomActionButton {
 
   ModernPlayerCustomActionButton(
       {required this.icon, this.onPressed, this.onDoubleTap, this.onLongPress});
+}
+
+/// Subtitle Option for Modern Player
+///
+/// With subtitle option you can add subtitle in video from other sources.
+class ModernPlayerSubtitleOptions {
+  /// Url or Path for subtitle source
+  String source;
+
+  /// Source type for loading subtitle.
+  ///
+  /// [sourceType.network] is load subtitle from internet.
+  ///
+  /// [sourceType.file] is load subtitle from local file.
+  ModernPlayerSubtitleSourceType sourceType;
+
+  /// When enables, it gets selected when added
+  bool? isSelected;
+
+  ModernPlayerSubtitleOptions(
+      {required this.source, required this.sourceType, this.isSelected});
+}
+
+/// Audio Option for Modern Player
+///
+/// With audio option you can add audio in video from other sources.
+class ModernPlayerAudioTrackOptions {
+  /// Url or Path for audio source
+  String source;
+
+  /// Source type for loading audio.
+  ///
+  /// [sourceType.network] is load audio from internet.
+  ///
+  /// [sourceType.file] is load audio from local file.
+  ModernPlayerAudioSourceType sourceType;
+
+  /// When enables, it gets selected when added
+  bool? isSelected;
+
+  ModernPlayerAudioTrackOptions(
+      {required this.source, required this.sourceType, this.isSelected});
 }

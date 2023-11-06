@@ -25,7 +25,6 @@ With modern_player, you can provide a top-notch video playback experience to you
 ## To-do
 
 * Callback options
-* Add manual subtitle and audio track
 * Picture-in-picture mode
 * Video Cast/Screen Mirroring (Chromecast)
 * Support for fullscreen
