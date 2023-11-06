@@ -5,8 +5,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:modern_player/modern_player.dart';
-import 'package:modern_player/src/modern_player_options.dart';
-import 'package:modern_player/src/modern_players_enums.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 
 class ModernPlayerControls extends StatefulWidget {

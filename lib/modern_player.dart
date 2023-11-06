@@ -8,6 +8,7 @@ export 'src/modern_players_enums.dart'
         ModernPlayerAudioSourceType;
 export 'src/modern_player_options.dart'
     show
+        ModernPlayerOptions,
         ModernPlayerQualityOptions,
         ModernPlayerControlsOptions,
         ModernPlayerThemeOptions,
@@ -15,5 +16,4 @@ export 'src/modern_player_options.dart'
         ModernPlayerCustomActionButton,
         ModernPlayerSubtitleOptions,
         ModernPlayerAudioTrackOptions,
-        ModernPlayerOptions,
         ModernPlayerToastSliderThemeOption;
