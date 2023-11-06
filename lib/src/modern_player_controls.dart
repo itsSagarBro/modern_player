@@ -5,21 +5,23 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:modern_player/modern_player.dart';
+import 'package:modern_player/src/modern_players_enums.dart';
 import 'package:screen_brightness/screen_brightness.dart';
+import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 class ModernPlayerControls extends StatefulWidget {
   const ModernPlayerControls(
       {super.key,
       required this.player,
       required this.viewSize,
-      required this.qualityOptions,
+      required this.videos,
       required this.controlsOptions,
       required this.themeOptions,
       required this.onBackPressed});
 
   final VlcPlayerController player;
   final Size viewSize;
-  final List<ModernPlayerQualityOptions> qualityOptions;
+  final List<ModernPlayerVideoData> videos;
   final ModernPlayerControlsOptions controlsOptions;
   final ModernPlayerThemeOptions themeOptions;
   final VoidCallback onBackPressed;
@@ -47,16 +49,24 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
   double? _slidingValue;
 
   late StreamController<double> _valController;
-  late ModernPlayerQualityOptions _currentQuality;
+  late ModernPlayerVideoData _currentVideoData;
 
+  /// Auto hide controls timer
   Timer? _hideTimer;
+
+  /// Check controls is hidden or not
   bool _hideStuff = true;
 
+  /// Offline seek position
   int _seekPos = 0;
 
+  /// List of audio tracks
   Map? _audioTracks;
+
+  /// List of subtitle tracks
   Map? _subtitleTracks;
 
+  /// List of playback speeds
   final List<double> _playbackSpeeds = [
     0.25,
     0.5,
@@ -77,7 +87,7 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
     _duration = player.value.duration;
     _currentPos = player.value.position;
 
-    _currentQuality = widget.qualityOptions.last;
+    _currentVideoData = widget.videos.first;
 
     _customActionButtons = widget.controlsOptions.customActionButtons ?? [];
 
@@ -86,6 +96,7 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
     super.initState();
   }
 
+  /// Add listners
   void _listen() async {
     if (!_isDisposed) {
       if (_hideStuff == false) {
@@ -106,7 +117,7 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
           player.value.playingState != PlayingState.initializing &&
           player.value.bufferPercent >= 100) {
         if (_audioTracks == null && _subtitleTracks == null) {
-          _getAudioTracks();
+          _getTracks();
         }
 
         setState(() {
@@ -116,11 +127,13 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
     }
   }
 
-  void _getAudioTracks() async {
+  /// Get audio and subtitle tracks
+  void _getTracks() async {
     _audioTracks = await player.getAudioTracks();
     _subtitleTracks = await player.getSpuTracks();
   }
 
+  /// Toggle between play and pause
   void _playOrPause() async {
     if (await player.isPlaying() ?? false) {
       setState(() {
@@ -135,7 +148,8 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
 
   void _startHideTimer() {
     _hideTimer?.cancel();
-    _hideTimer = Timer(const Duration(seconds: 5), () {
+    _hideTimer = Timer(
+        widget.controlsOptions.autoHideTime ?? const Duration(seconds: 5), () {
       setState(() {
         _hideStuff = true;
       });
@@ -151,7 +165,7 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
     });
   }
 
-  void _changeVideoQuality(ModernPlayerQualityOptions qualityOptions) async {
+  void _changeVideoQuality(ModernPlayerVideoData videoData) async {
     Duration lastPosition = player.value.position;
 
     await player.pause().then((value) async {
@@ -159,47 +173,70 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
         _isLoading = true;
       });
 
-      if (qualityOptions.sourceType == ModernPlayerSourceType.network) {
+      if (videoData.sourceType == ModernPlayerSourceType.network) {
         await player
-            .setMediaFromNetwork(qualityOptions.source,
+            .setMediaFromNetwork(videoData.source,
                 autoPlay: true, hwAcc: HwAcc.full)
             .whenComplete(() async {
           await player.seekTo(lastPosition).then((value) {
             player.play();
             setState(() {
               _currentPos = lastPosition;
-              _currentQuality = qualityOptions;
+              _currentVideoData = videoData;
             });
           });
         });
-      } else if (qualityOptions.sourceType == ModernPlayerSourceType.file) {
+      } else if (videoData.sourceType == ModernPlayerSourceType.file) {
         await player
-            .setMediaFromFile(File(qualityOptions.source),
+            .setMediaFromFile(File(videoData.source),
                 autoPlay: true, hwAcc: HwAcc.full)
             .whenComplete(() async {
           await player.seekTo(lastPosition).then((value) {
             player.play();
             setState(() {
               _currentPos = lastPosition;
-              _currentQuality = qualityOptions;
+              _currentVideoData = videoData;
+            });
+          });
+        });
+      } else if (widget.videos.first.sourceType ==
+          ModernPlayerSourceType.youtube) {
+        var yt = YoutubeExplode();
+        StreamManifest manifest =
+            await yt.videos.streamsClient.getManifest(videoData.source);
+
+        VideoStreamInfo streamInfo = manifest.muxed.withHighestBitrate();
+
+        await player
+            .setMediaFromNetwork(streamInfo.url.toString(),
+                autoPlay: true, hwAcc: HwAcc.full)
+            .whenComplete(() async {
+          await player.seekTo(lastPosition).then((value) {
+            player.play();
+            setState(() {
+              _currentPos = lastPosition;
+              _currentVideoData = videoData;
             });
           });
         });
       } else {
         await player
-            .setMediaFromAsset(qualityOptions.source,
+            .setMediaFromAsset(videoData.source,
                 autoPlay: true, hwAcc: HwAcc.full)
             .whenComplete(() async {
           await player.seekTo(lastPosition).then((value) {
             player.play();
             setState(() {
               _currentPos = lastPosition;
-              _currentQuality = qualityOptions;
+              _currentVideoData = videoData;
             });
           });
         });
       }
     });
+
+    // Refresh subtitle and audio tracks
+    _getTracks();
   }
 
   void _changeSubtitleTrack(MapEntry subtitle) async {
@@ -291,7 +328,7 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
       // right, volume
       if (widget.controlsOptions.enableVolumeSlider) {
         _dragRight = true;
-        double volume = _volume ?? (player.value.volume / 200).toDouble();
+        double volume = _volume ?? (player.value.volume / 100).toDouble();
         setState(() {
           _slidingValue = volume;
           _volume = volume;
@@ -325,7 +362,7 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
       var volume = _volume ?? 1;
       volume += delta;
       volume = volume.clamp(0.0, 1.0);
-      player.setVolume((volume * 200).toInt());
+      player.setVolume((volume * 100).toInt());
       setState(() {
         _slidingValue = volume;
         _volume = volume;
@@ -717,7 +754,7 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
             GestureDetector(
               onTap: () {
                 Navigator.pop(context);
-                showQualityOptions();
+                _showQualityOptions();
               },
               child: Row(
                 children: [
@@ -733,7 +770,7 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
                     style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                   Text(
-                    _currentQuality.name,
+                    _currentVideoData.label,
                     style: const TextStyle(color: Colors.white60, fontSize: 16),
                   )
                 ],
@@ -776,35 +813,7 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
             const SizedBox(
               height: 30,
             ),
-            GestureDetector(
-              onTap: () {
-                if (_audioTracks != null) {
-                  Navigator.pop(context);
-                  showAudioOptions();
-                }
-              },
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.speaker_group_outlined,
-                    color: Colors.white,
-                  ),
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  const Text(
-                    "Audio  ◉  ",
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
-                  Text(
-                    _audioTracks == null
-                        ? "Loading"
-                        : _audioTracks![player.value.activeAudioTrack],
-                    style: const TextStyle(color: Colors.white60, fontSize: 16),
-                  )
-                ],
-              ),
-            ),
+            _audioRowWidget(context),
             const SizedBox(
               height: 10,
             ),
@@ -814,18 +823,20 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
     );
   }
 
-  GestureDetector _subtitleRowWidget(BuildContext context) {
+  Widget _subtitleRowWidget(BuildContext context) {
     return GestureDetector(
       onTap: () {
         if (_subtitleTracks != null) {
-          if (_subtitleTracks!.entries.isNotEmpty) {
+          if (_subtitleTracks!.entries.isNotEmpty &&
+              _subtitleTracks![player.value.activeSpuTrack] != null) {
             Navigator.pop(context);
             showSubtitleOptions();
           }
         }
       },
       child: _subtitleTracks != null
-          ? _subtitleTracks!.entries.isNotEmpty
+          ? _subtitleTracks!.entries.isNotEmpty &&
+                  _subtitleTracks![player.value.activeSpuTrack] != null
               ? Row(
                   children: [
                     const Icon(
@@ -841,7 +852,8 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
                     ),
                     Text(
                       _subtitleTracks!.entries.isNotEmpty
-                          ? _subtitleTracks![player.value.activeSpuTrack]
+                          ? _subtitleTracks![player.value.activeSpuTrack] ??
+                              "Unavailable"
                           : "Unavailable",
                       style:
                           const TextStyle(color: Colors.white60, fontSize: 16),
@@ -889,7 +901,61 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
     );
   }
 
-  void showQualityOptions() {
+  Widget _audioRowWidget(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        if (_audioTracks != null) {
+          if (_audioTracks![player.value.activeAudioTrack] != null) {
+            Navigator.pop(context);
+            _showAudioOptions();
+          }
+        }
+      },
+      child: _audioTracks![player.value.activeAudioTrack] != null
+          ? Row(
+              children: [
+                const Icon(
+                  Icons.speaker_group_outlined,
+                  color: Colors.white,
+                ),
+                const SizedBox(
+                  width: 20,
+                ),
+                const Text(
+                  "Audio  ◉  ",
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                ),
+                Text(
+                  _audioTracks == null
+                      ? "Loading"
+                      : _audioTracks![player.value.activeAudioTrack],
+                  style: const TextStyle(color: Colors.white60, fontSize: 16),
+                )
+              ],
+            )
+          : const Row(
+              children: [
+                Icon(
+                  Icons.closed_caption_outlined,
+                  color: Colors.white38,
+                ),
+                SizedBox(
+                  width: 20,
+                ),
+                Text(
+                  "Audio  ◉  ",
+                  style: TextStyle(color: Colors.white38, fontSize: 16),
+                ),
+                Text(
+                  "Unavailable",
+                  style: TextStyle(color: Colors.white38, fontSize: 16),
+                )
+              ],
+            ),
+    );
+  }
+
+  void _showQualityOptions() {
     showModalBottomSheet(
       context: context,
       useSafeArea: true,
@@ -901,10 +967,10 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ...widget.qualityOptions.map(
+            ...widget.videos.map(
               (e) => InkWell(
                 onTap: () {
-                  if (e.name != _currentQuality.name) {
+                  if (e.label != _currentVideoData.label) {
                     Navigator.pop(context);
                     _changeVideoQuality(e);
                   }
@@ -913,7 +979,7 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
                   margin: const EdgeInsets.symmetric(vertical: 8),
                   child: Row(
                     children: [
-                      if (e.name == _currentQuality.name)
+                      if (e.label == _currentVideoData.label)
                         const SizedBox(
                           width: 15,
                           child: Icon(
@@ -922,10 +988,10 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
                           ),
                         ),
                       SizedBox(
-                        width: e.name == _currentQuality.name ? 20 : 35,
+                        width: e.label == _currentVideoData.label ? 20 : 35,
                       ),
                       Text(
-                        e.name,
+                        e.label,
                         style:
                             const TextStyle(color: Colors.white, fontSize: 16),
                       ),
@@ -1062,7 +1128,7 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
     );
   }
 
-  void showAudioOptions() {
+  void _showAudioOptions() {
     showModalBottomSheet(
       context: context,
       useSafeArea: true,

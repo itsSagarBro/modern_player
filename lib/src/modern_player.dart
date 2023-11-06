@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ import 'package:modern_player/src/modern_player_controls.dart';
 import 'package:modern_player/src/modern_player_options.dart';
 import 'package:modern_player/src/modern_players_enums.dart';
 import 'package:visibility_detector/visibility_detector.dart';
+import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 /// Modern Player gives you a controller for flutter_vlc_player.
 ///
@@ -15,7 +17,7 @@ import 'package:visibility_detector/visibility_detector.dart';
 /// when calling [createPlayer]
 class ModernPlayer extends StatefulWidget {
   const ModernPlayer._(
-      {required this.qualityOptions,
+      {required this.videos,
       required this.subtitles,
       required this.audioTracks,
       this.options,
@@ -24,7 +26,7 @@ class ModernPlayer extends StatefulWidget {
       this.onBackPressed});
 
   /// Video quality options for multiple qualities. If you have only one quality video just add one in list.
-  final List<ModernPlayerQualityOptions> qualityOptions;
+  final List<ModernPlayerVideoData> videos;
 
   /// Modern player can detect subtitle from the video on supported formats like .mkv.
   ///
@@ -47,7 +49,7 @@ class ModernPlayer extends StatefulWidget {
   final VoidCallback? onBackPressed;
 
   static Widget createPlayer(
-      {required List<ModernPlayerQualityOptions> qualityOptions,
+      {required List<ModernPlayerVideoData> videos,
       List<ModernPlayerSubtitleOptions>? subtitles,
       List<ModernPlayerAudioTrackOptions>? audioTracks,
       ModernPlayerOptions? options,
@@ -55,7 +57,7 @@ class ModernPlayer extends StatefulWidget {
       ModernPlayerThemeOptions? themeOptions,
       VoidCallback? onBackPressed}) {
     return ModernPlayer._(
-      qualityOptions: qualityOptions,
+      videos: videos,
       subtitles: subtitles ?? [],
       audioTracks: audioTracks ?? [],
       options: options,
@@ -73,6 +75,7 @@ class _ModernPlayerState extends State<ModernPlayer> {
   late VlcPlayerController _playerController;
 
   bool isDisposed = false;
+  bool canDisplayVideo = false;
 
   double visibilityFraction = 1;
 
@@ -80,10 +83,14 @@ class _ModernPlayerState extends State<ModernPlayer> {
   void initState() {
     super.initState();
 
-    if (widget.qualityOptions.first.sourceType ==
-        ModernPlayerSourceType.network) {
+    _setPlayer();
+  }
+
+  void _setPlayer() async {
+    // Network
+    if (widget.videos.first.sourceType == ModernPlayerSourceType.network) {
       _playerController =
-          VlcPlayerController.network(widget.qualityOptions.first.source,
+          VlcPlayerController.network(widget.videos.first.source,
               autoPlay: true,
               autoInitialize: true,
               hwAcc: HwAcc.full,
@@ -91,23 +98,39 @@ class _ModernPlayerState extends State<ModernPlayer> {
                 subtitle: VlcSubtitleOptions(
                     [VlcSubtitleOptions.color(VlcSubtitleColor.white)]),
               ));
-    } else if (widget.qualityOptions.first.sourceType ==
-        ModernPlayerSourceType.file) {
+    }
+    // File
+    else if (widget.videos.first.sourceType == ModernPlayerSourceType.file) {
       _playerController = VlcPlayerController.file(
-          File(widget.qualityOptions.first.source),
-          autoPlay: true,
-          autoInitialize: true,
-          hwAcc: HwAcc.full);
-    } else {
-      _playerController = VlcPlayerController.asset(
-          widget.qualityOptions.first.source,
+          File(widget.videos.first.source),
           autoPlay: true,
           autoInitialize: true,
           hwAcc: HwAcc.full);
     }
+    // Youtube
+    else if (widget.videos.first.sourceType == ModernPlayerSourceType.youtube) {
+      var yt = YoutubeExplode();
+      StreamManifest manifest =
+          await yt.videos.streamsClient.getManifest(widget.videos.first.source);
+
+      VideoStreamInfo streamInfo = manifest.muxed.withHighestBitrate();
+
+      log(streamInfo.url.toString());
+      _playerController = VlcPlayerController.network(streamInfo.url.toString(),
+          autoPlay: true, autoInitialize: true, hwAcc: HwAcc.full);
+    }
+    // Asset
+    else {
+      _playerController = VlcPlayerController.asset(widget.videos.first.source,
+          autoPlay: true, autoInitialize: true, hwAcc: HwAcc.full);
+    }
 
     _playerController.addOnInitListener(_onInitialize);
     _playerController.addListener(_checkVideoLoaded);
+
+    setState(() {
+      canDisplayVideo = true;
+    });
   }
 
   void _onInitialize() async {
@@ -197,37 +220,49 @@ class _ModernPlayerState extends State<ModernPlayer> {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
 
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        VisibilityDetector(
-          key: const ValueKey<int>(0),
-          onVisibilityChanged: (info) {
-            if (widget.options?.autoVisibilityPause ?? true) {
-              _onChangeVisibility(info.visibleFraction);
-            }
-          },
-          child: VlcPlayer(
-            controller: _playerController,
-            aspectRatio: screenSize.width / screenSize.height,
-          ),
-        ),
-        if (widget.controlsOptions?.showControls ?? true)
-          ModernPlayerControls(
-            player: _playerController,
-            qualityOptions: widget.qualityOptions,
-            controlsOptions:
-                widget.controlsOptions ?? ModernPlayerControlsOptions(),
-            themeOptions: widget.themeOptions ?? ModernPlayerThemeOptions(),
-            viewSize: Size(MediaQuery.of(context).size.width,
-                MediaQuery.of(context).size.height),
-            onBackPressed: () {
-              if (widget.onBackPressed != null) {
-                widget.onBackPressed!.call();
-              }
-            },
+    return canDisplayVideo
+        ? Stack(
+            fit: StackFit.expand,
+            children: [
+              VisibilityDetector(
+                key: const ValueKey<int>(0),
+                onVisibilityChanged: (info) {
+                  if (widget.options?.autoVisibilityPause ?? true) {
+                    _onChangeVisibility(info.visibleFraction);
+                  }
+                },
+                child: VlcPlayer(
+                  controller: _playerController,
+                  aspectRatio: screenSize.width / screenSize.height,
+                ),
+              ),
+              if (widget.controlsOptions?.showControls ?? true)
+                ModernPlayerControls(
+                  player: _playerController,
+                  videos: widget.videos,
+                  controlsOptions:
+                      widget.controlsOptions ?? ModernPlayerControlsOptions(),
+                  themeOptions:
+                      widget.themeOptions ?? ModernPlayerThemeOptions(),
+                  viewSize: Size(MediaQuery.of(context).size.width,
+                      MediaQuery.of(context).size.height),
+                  onBackPressed: () {
+                    if (widget.onBackPressed != null) {
+                      widget.onBackPressed!.call();
+                    }
+                  },
+                )
+            ],
           )
-      ],
-    );
+        : Center(
+            child: SizedBox(
+              height: 75,
+              width: 75,
+              child: CircularProgressIndicator(
+                color: widget.themeOptions?.loadingColor ?? Colors.greenAccent,
+                strokeCap: StrokeCap.round,
+              ),
+            ),
+          );
   }
 }

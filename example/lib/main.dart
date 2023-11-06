@@ -86,12 +86,10 @@ class _MyHomePageState extends State<MyHomePage> {
             SizedBox(
               height: 250,
               child: ModernPlayer.createPlayer(
-                  qualityOptions: [
-                    ModernPlayerQualityOptions(
-                      name: "Default",
-                      source:
-                          "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4",
-                      sourceType: ModernPlayerSourceType.network,
+                  videos: [
+                    ModernPlayerVideoData.asset(
+                      label: "YT",
+                      path: "assets/wishdragon.mp4",
                     ),
                   ],
                   subtitles: [],

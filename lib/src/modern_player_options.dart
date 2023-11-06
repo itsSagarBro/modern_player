@@ -6,18 +6,51 @@ import 'package:modern_player/src/modern_players_enums.dart';
 /// This contains name and url of the video quality.
 /// In name field you can add name of quality like Low/High.
 /// In url field you can add url of the video and if your player is file then add path of video
-class ModernPlayerQualityOptions {
+class ModernPlayerVideoData {
   /// Name of quality, This will be displayed in video player quality selector menu.
-  String name;
+  String label = "";
 
   /// Url or path of the video.
-  String source;
+  String source = "";
 
   /// This can define type of data source of Modern Player.
-  ModernPlayerSourceType sourceType;
+  ModernPlayerSourceType sourceType = ModernPlayerSourceType.asset;
 
-  ModernPlayerQualityOptions(
-      {required this.name, required this.source, required this.sourceType});
+  ///Constructs a [ModernPlayerVideoData] playing a video from obtained from the network.
+  ///
+  ///The URL for the video is given by the [url] argument and must not be null.
+  ///And the [label] is displayed on quality selection on menu.
+  ModernPlayerVideoData.network({required this.label, required String url}) {
+    source = url;
+    sourceType = ModernPlayerSourceType.network;
+  }
+
+  ///Constructs a [ModernPlayerVideoData] playing a video from obtained from the local file.
+  ///
+  ///The Path for the video is given by the [path] argument and must not be null.
+  ///And the [label] is displayed on quality selection on menu.
+  ModernPlayerVideoData.file({required this.label, required String path}) {
+    source = path;
+    sourceType = ModernPlayerSourceType.file;
+  }
+
+  ///Constructs a [ModernPlayerVideoData] playing a video from obtained from the youtube.
+  ///
+  ///The Id of the youtube video is given by the [id] argument and must not be null.
+  ///And the [label] is displayed on quality selection on menu.
+  ModernPlayerVideoData.youtube({required this.label, required String id}) {
+    source = id;
+    sourceType = ModernPlayerSourceType.youtube;
+  }
+
+  ///Constructs a [ModernPlayerVideoData] playing a video from obtained from the assets.
+  ///
+  ///The Path for the video is given by the [path] argument and must not be null.
+  ///And the [label] is displayed on quality selection on menu.
+  ModernPlayerVideoData.asset({required this.label, required String path}) {
+    source = path;
+    sourceType = ModernPlayerSourceType.asset;
+  }
 }
 
 /// Modern Player Option gies some basic controls for video.
@@ -62,6 +95,9 @@ class ModernPlayerControlsOptions {
   /// Toggle double tap to seek.
   bool doubleTapToSeek;
 
+  /// Time for auto hiding controls
+  Duration? autoHideTime;
+
   /// With custom action button you can create your own button an get a callback on pressed, double tap, and long press.
   List<ModernPlayerCustomActionButton>? customActionButtons;
 
@@ -74,7 +110,8 @@ class ModernPlayerControlsOptions {
       this.enableVolumeSlider = true,
       this.enableBrightnessSlider = true,
       this.doubleTapToSeek = true,
-      this.customActionButtons});
+      this.customActionButtons,
+      this.autoHideTime});
 }
 
 /// Theme option for Modern Player

@@ -8,6 +8,9 @@ enum ModernPlayerSourceType {
   /// The video is load from the local filesystem.
   file,
 
+  /// The video is load from the youtube.
+  youtube,
+
   /// The video is load from asset
   asset
 }

@@ -173,8 +173,10 @@ final modernPlayerWidget = SizedBox(
       qualityOptions: [
         ModernPlayerQualityOptions(
             name: "Default",
-            url:
-                "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4")
+            source:
+                "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4",
+            sourceType: ModernPlayerSourceType.network,
+          )
       ],
       sourceType: ModernPlayerSourceType.network,
     ),

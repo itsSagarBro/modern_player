@@ -2,6 +2,10 @@
 
 * Added quality based video source type
 * Added play video from asset
+* Added support for youtube
+* Fixed volume slider error
+* Fixed subtitle menu option error on .mp4
+* Fixed audio menu option error on .mp4
 
 ## 0.0.3
 
