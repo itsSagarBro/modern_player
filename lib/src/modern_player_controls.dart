@@ -12,7 +12,6 @@ class ModernPlayerControls extends StatefulWidget {
       {super.key,
       required this.player,
       required this.viewSize,
-      required this.dataSourceType,
       required this.qualityOptions,
       required this.controlsOptions,
       required this.themeOptions,
@@ -20,7 +19,6 @@ class ModernPlayerControls extends StatefulWidget {
 
   final VlcPlayerController player;
   final Size viewSize;
-  final ModernPlayerSourceType dataSourceType;
   final List<ModernPlayerQualityOptions> qualityOptions;
   final ModernPlayerControlsOptions controlsOptions;
   final ModernPlayerThemeOptions themeOptions;
@@ -161,9 +159,22 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
         _isLoading = true;
       });
 
-      if (widget.dataSourceType == ModernPlayerSourceType.network) {
+      if (qualityOptions.sourceType == ModernPlayerSourceType.network) {
         await player
-            .setMediaFromNetwork(qualityOptions.url,
+            .setMediaFromNetwork(qualityOptions.source,
+                autoPlay: true, hwAcc: HwAcc.full)
+            .whenComplete(() async {
+          await player.seekTo(lastPosition).then((value) {
+            player.play();
+            setState(() {
+              _currentPos = lastPosition;
+              _currentQuality = qualityOptions;
+            });
+          });
+        });
+      } else if (qualityOptions.sourceType == ModernPlayerSourceType.file) {
+        await player
+            .setMediaFromFile(File(qualityOptions.source),
                 autoPlay: true, hwAcc: HwAcc.full)
             .whenComplete(() async {
           await player.seekTo(lastPosition).then((value) {
@@ -176,7 +187,7 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
         });
       } else {
         await player
-            .setMediaFromFile(File(qualityOptions.url),
+            .setMediaFromAsset(qualityOptions.source,
                 autoPlay: true, hwAcc: HwAcc.full)
             .whenComplete(() async {
           await player.seekTo(lastPosition).then((value) {

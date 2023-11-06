@@ -88,11 +88,12 @@ class _MyHomePageState extends State<MyHomePage> {
               child: ModernPlayer.createPlayer(
                   qualityOptions: [
                     ModernPlayerQualityOptions(
-                        name: "Default",
-                        url:
-                            "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4"),
+                      name: "Default",
+                      source:
+                          "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4",
+                      sourceType: ModernPlayerSourceType.network,
+                    ),
                   ],
-                  sourceType: ModernPlayerSourceType.network,
                   subtitles: [],
                   audioTracks: [],
                   themeOptions: themeOptions,

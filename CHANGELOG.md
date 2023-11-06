@@ -1,11 +1,16 @@
+## 0.0.35
+
+* Added quality based video source type
+* Added play video from asset
+
 ## 0.0.3
 
 * Moved theme option from control option to modern player
-* Added videoStartAt in controls option
+* Added videoStartAt in options
 * Added playback speed controls in menu
 * Added custom action button support in controls option
-* Added manual subtitle suopprt
-* Added manual audio tracks suopprt
+* Added manual subtitle support
+* Added manual audio tracks support
 * Added customization for brightness and volume slider theme
 
 ## 0.0.2

@@ -4,21 +4,31 @@ Enhance your video playback experience with modern_player—a feature-rich Flutt
 
 Introducing modern_player, the ultimate Flutter package designed to elevate your video playback experience with flutter_vlc_player. This feature-packed solution offers a seamless and engaging video playback interface with the following key features:
 
-**Auto Hide Controls:** Say goodbye to cluttered screens with auto-hiding controls that ensure an immersive viewing experience.
+* **Auto Hide Controls:** Say goodbye to cluttered screens with auto-hiding controls that ensure an immersive viewing experience.
 
-**Double Tap to Seek:** Effortlessly seek through your video content by double-tapping on the screen.
+* **Double Tap to Seek:** Effortlessly seek through your video content by double-tapping on the screen.
 
-**Change Video Quality:** Switch between video quality options to ensure the best playback experience.
+* **Change Video Quality:** Switch between video quality options to ensure the best playback experience.
 
-**Auto-Detect Video Subtitles and Audio Tracks:** modern_player automatically detects and offers options for video subtitles and audio tracks.
+* **Auto-Detect Video Subtitles and Audio Tracks:** modern_player automatically detects and offers options for video subtitles and audio tracks.
 
-**Fully Customizable UI:** Tailor the user interface to your liking, giving you full control over the look and feel.
+* **Fully Customizable UI:** Tailor the user interface to your liking, giving you full control over the look and feel.
 
-**Brightness Control:** Slide left to adjust brightness on the fly for a comfortable viewing experience.
+* **Brightness Control:** Slide left to adjust brightness on the fly for a comfortable viewing experience.
 
-**Volume Control:** Slide vertically on the right side to fine-tune the audio volume to your preference.
+* **Volume Control:** Slide vertically on the right side to fine-tune the audio volume to your preference.
 
-**Cross-Platform Support:** Enjoy modern_player's features on both Android and iOS devices.
+* **Video Start At:** You can now specify where the video starts with the `videoStartAt` option.
+
+* **Playback Speed Controls:** Adjust playback speed to your preference with the new controls.
+
+* **Custom Action Button Support:** Customize your controls with your own action buttons.
+
+* **Manual Subtitle Support:** Manually add subtitles to your videos.
+
+* **Manual Audio Tracks Support:** Handpick and manage audio tracks to suit your preferences.
+
+* **Cross-Platform Support:** Enjoy modern_player's features on both Android and iOS devices.
 
 With modern_player, you can provide a top-notch video playback experience to your users, complete with an intuitive and fully customizable interface. Say goodbye to mundane video controls and give your app an edge with modern_player.
 
@@ -31,6 +41,7 @@ With modern_player, you can provide a top-notch video playback experience to you
 * Custom ErrorBuilder
 * Placeholder Widget
 * Loop Support
+* Toggle screen sleep
 
 ## Installation
 
@@ -165,6 +176,7 @@ final modernPlayerWidget = SizedBox(
             url:
                 "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4")
       ],
+      sourceType: ModernPlayerSourceType.network,
     ),
   );
 ```
@@ -196,24 +208,13 @@ To enable disable button, you can add these lines to your `modern_player`
       showBackbutton: false,
       enableVolumeSlider: true,
       enableBrightnessSlider: true,
-      showBottomBar: true,
-      customActionButtons: [
-        ModernPlayerCustomActionButton(
-          icon: const Icon(
-            Icons.info_rounded,
-            color: Colors.white,
-          ),
-          onPressed: () {
-            // On Pressed
-          },
-        ),
-      ])
+      showBottomBar: true,)
 ```
 ### Custom Action Buttons
 
 Empower your app's users with modern_player's customizable action buttons. Add custom buttons to control, navigate, or interact with your video content, and define the callbacks to handle these actions, offering a truly tailored video experience.
 
-To add custom buttons, you can add these lines to your `controls options`
+To add custom buttons, you can add these lines to your `controlsOptions`
 
 ```dart
   customActionButtons: [
@@ -348,3 +349,7 @@ Join our development team, and let's collectively take modern_player to new heig
 GitHub Repository: https://github.com/itsSagarBro/modern_player
 
 **Together, we can create the ultimate Flutter video playback package. Join us on this exciting journey!**
+
+## Buy Me a Coffee
+
+<a href="https://www.buymeacoffee.com/itssagarbro" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-yellow.png" alt="Buy Me A Coffee" height="41" width="174"></a>

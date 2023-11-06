@@ -11,21 +11,25 @@ class ModernPlayerQualityOptions {
   String name;
 
   /// Url or path of the video.
-  String url;
+  String source;
 
-  ModernPlayerQualityOptions({required this.name, required this.url});
+  /// This can define type of data source of Modern Player.
+  ModernPlayerSourceType sourceType;
+
+  ModernPlayerQualityOptions(
+      {required this.name, required this.source, required this.sourceType});
 }
 
 /// Modern Player Option gies some basic controls for video.
 class ModernPlayerOptions {
   /// When enabled, Video player will automatically gets paused when it is not visible and play when its visible.
-  bool controlVisibiltyPlay;
+  bool autoVisibilityPause;
 
   /// Set start time of video in milliseconds
   int? videoStartAt;
 
   ModernPlayerOptions({
-    this.controlVisibiltyPlay = true,
+    this.autoVisibilityPause = true,
     this.videoStartAt,
   });
 }

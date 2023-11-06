@@ -16,7 +16,6 @@ import 'package:visibility_detector/visibility_detector.dart';
 class ModernPlayer extends StatefulWidget {
   const ModernPlayer._(
       {required this.qualityOptions,
-      required this.sourceType,
       required this.subtitles,
       required this.audioTracks,
       this.options,
@@ -26,9 +25,6 @@ class ModernPlayer extends StatefulWidget {
 
   /// Video quality options for multiple qualities. If you have only one quality video just add one in list.
   final List<ModernPlayerQualityOptions> qualityOptions;
-
-  /// Type of player. It is network player or file player.
-  final ModernPlayerSourceType sourceType;
 
   /// Modern player can detect subtitle from the video on supported formats like .mkv.
   ///
@@ -52,7 +48,6 @@ class ModernPlayer extends StatefulWidget {
 
   static Widget createPlayer(
       {required List<ModernPlayerQualityOptions> qualityOptions,
-      required ModernPlayerSourceType sourceType,
       List<ModernPlayerSubtitleOptions>? subtitles,
       List<ModernPlayerAudioTrackOptions>? audioTracks,
       ModernPlayerOptions? options,
@@ -61,7 +56,6 @@ class ModernPlayer extends StatefulWidget {
       VoidCallback? onBackPressed}) {
     return ModernPlayer._(
       qualityOptions: qualityOptions,
-      sourceType: sourceType,
       subtitles: subtitles ?? [],
       audioTracks: audioTracks ?? [],
       options: options,
@@ -86,19 +80,27 @@ class _ModernPlayerState extends State<ModernPlayer> {
   void initState() {
     super.initState();
 
-    if (widget.sourceType == ModernPlayerSourceType.network) {
-      _playerController = VlcPlayerController.network(
-          widget.qualityOptions.first.url,
+    if (widget.qualityOptions.first.sourceType ==
+        ModernPlayerSourceType.network) {
+      _playerController =
+          VlcPlayerController.network(widget.qualityOptions.first.source,
+              autoPlay: true,
+              autoInitialize: true,
+              hwAcc: HwAcc.full,
+              options: VlcPlayerOptions(
+                subtitle: VlcSubtitleOptions(
+                    [VlcSubtitleOptions.color(VlcSubtitleColor.white)]),
+              ));
+    } else if (widget.qualityOptions.first.sourceType ==
+        ModernPlayerSourceType.file) {
+      _playerController = VlcPlayerController.file(
+          File(widget.qualityOptions.first.source),
           autoPlay: true,
           autoInitialize: true,
-          hwAcc: HwAcc.full,
-          options: VlcPlayerOptions(
-            advanced:
-                VlcAdvancedOptions([VlcAdvancedOptions.networkCaching(120000)]),
-          ));
+          hwAcc: HwAcc.full);
     } else {
-      _playerController = VlcPlayerController.file(
-          File(widget.qualityOptions.first.url),
+      _playerController = VlcPlayerController.asset(
+          widget.qualityOptions.first.source,
           autoPlay: true,
           autoInitialize: true,
           hwAcc: HwAcc.full);
@@ -201,7 +203,7 @@ class _ModernPlayerState extends State<ModernPlayer> {
         VisibilityDetector(
           key: const ValueKey<int>(0),
           onVisibilityChanged: (info) {
-            if (widget.options?.controlVisibiltyPlay ?? true) {
+            if (widget.options?.autoVisibilityPause ?? true) {
               _onChangeVisibility(info.visibleFraction);
             }
           },
@@ -214,7 +216,6 @@ class _ModernPlayerState extends State<ModernPlayer> {
           ModernPlayerControls(
             player: _playerController,
             qualityOptions: widget.qualityOptions,
-            dataSourceType: widget.sourceType,
             controlsOptions:
                 widget.controlsOptions ?? ModernPlayerControlsOptions(),
             themeOptions: widget.themeOptions ?? ModernPlayerThemeOptions(),

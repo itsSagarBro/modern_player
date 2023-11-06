@@ -6,7 +6,10 @@ enum ModernPlayerSourceType {
   network,
 
   /// The video is load from the local filesystem.
-  file
+  file,
+
+  /// The video is load from asset
+  asset
 }
 
 /// Source Type for Modern Player Subtitle
