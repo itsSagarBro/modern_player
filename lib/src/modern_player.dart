@@ -142,8 +142,6 @@ class _ModernPlayerState extends State<ModernPlayer> {
 
         _playerController = VlcPlayerController.network(ytVideos.first.source,
             autoPlay: true, autoInitialize: true, hwAcc: HwAcc.auto);
-
-        yt.close();
       } else {
         _playerController = VlcPlayerController.network(
             manifest.muxed.withHighestBitrate().url.toString(),
