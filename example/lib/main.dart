@@ -86,12 +86,8 @@ class _MyHomePageState extends State<MyHomePage> {
             SizedBox(
               height: 250,
               child: ModernPlayer.createPlayer(
-                  videos: [
-                    ModernPlayerVideoData.asset(
-                      label: "YT",
-                      path: "assets/wishdragon.mp4",
-                    ),
-                  ],
+                  video: ModernPlayerVideo.youtube(
+                      id: 'EiiOYwqk3A0', fetchQualities: true),
                   subtitles: [],
                   audioTracks: [],
                   themeOptions: themeOptions,

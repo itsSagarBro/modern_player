@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:modern_player/modern_player.dart';
@@ -827,16 +826,14 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
     return GestureDetector(
       onTap: () {
         if (_subtitleTracks != null) {
-          if (_subtitleTracks!.entries.isNotEmpty &&
-              _subtitleTracks![player.value.activeSpuTrack] != null) {
+          if (_subtitleTracks!.entries.isNotEmpty) {
             Navigator.pop(context);
             showSubtitleOptions();
           }
         }
       },
       child: _subtitleTracks != null
-          ? _subtitleTracks!.entries.isNotEmpty &&
-                  _subtitleTracks![player.value.activeSpuTrack] != null
+          ? _subtitleTracks!.entries.isNotEmpty
               ? Row(
                   children: [
                     const Icon(
@@ -853,7 +850,7 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
                     Text(
                       _subtitleTracks!.entries.isNotEmpty
                           ? _subtitleTracks![player.value.activeSpuTrack] ??
-                              "Unavailable"
+                              "None"
                           : "Unavailable",
                       style:
                           const TextStyle(color: Colors.white60, fontSize: 16),

@@ -5,6 +5,7 @@ export 'src/modern_players_enums.dart'
     show ModernPlayerSubtitleSourceType, ModernPlayerAudioSourceType;
 export 'src/modern_player_options.dart'
     show
+        ModernPlayerVideo,
         ModernPlayerOptions,
         ModernPlayerVideoData,
         ModernPlayerControlsOptions,

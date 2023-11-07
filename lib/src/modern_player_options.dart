@@ -1,11 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:modern_player/src/modern_players_enums.dart';
 
-/// List of video for Modern Player
+/// [ModernPlayerVideo] has multiple type of player.
 ///
-/// This contains name and url of the video quality.
-/// In name field you can add name of quality like Low/High.
-/// In url field you can add url of the video and if your player is file then add path of video
+/// With [ModernPlayerVideo.single] you can create a singel video player.
+///
+/// With [ModernPlayerVideo.multiple] you can create a video player that contains multiple qualities and resolution.
+///
+/// With [ModernPlayerVideo.youtube] you can create a yotube video player with some extra features.
+class ModernPlayerVideo {
+  List<ModernPlayerVideoData> videosData = [];
+  bool? fetchQualities;
+
+  /// [ModernPlayerVideo.single] allow you to create a single video player, without any quality selection.
+  ModernPlayerVideo.single(ModernPlayerVideoData videoData) {
+    videosData = [videoData];
+  }
+
+  /// [ModernPlayerVideo.multiple] allow you to create video player with abilty to switch between
+  /// diffrente qualities/resoltuion or video tracks.
+  ModernPlayerVideo.multiple(this.videosData);
+
+  /// [ModernPlayerVideo.youtube] allow you to create a video player with youtube video id.
+  ///
+  /// It has an additional feature [fetchQualities], which can get different video quality/resoltuion
+  /// from youtube and allow user to switch between those.
+  ModernPlayerVideo.youtube({required String id, this.fetchQualities}) {
+    videosData = [ModernPlayerVideoData.youtube(label: "Default", id: id)];
+  }
+}
+
+/// [ModernPlayerVideoData] is a list item of video for Modern Player
+///
+/// This contains name and url of the video.
+/// In [label] field you can add name of quality like Low/High.
+/// In [source] field you can add url of the video and if your player is file then add path of video
 class ModernPlayerVideoData {
   /// Name of quality, This will be displayed in video player quality selector menu.
   String label = "";

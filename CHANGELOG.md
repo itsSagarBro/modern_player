@@ -1,8 +1,9 @@
 ## 0.0.35
 
+* Added youtube videos support
+* Added quality selection for youtube video
 * Added quality based video source type
 * Added play video from asset
-* Added support for youtube
 * Fixed volume slider error
 * Fixed subtitle menu option error on .mp4
 * Fixed audio menu option error on .mp4

@@ -1,4 +1,11 @@
+# ModernPlayer
+
 Enhance your video playback experience with modern_player—a feature-rich Flutter package for flutter_vlc_player. Enjoy auto-hiding controls, double-tap to seek, customizable UI, automatic subtitle and audio track detection, and more on both Android and iOS.
+
+![Pub Version](https://img.shields.io/pub/v/modern_player)
+![License](https://img.shields.io/github/license/ItsSagarBro/modern_player)
+![Lint](https://img.shields.io/badge/style-lint-4BC0F5.svg)
+[![Generic badge](https://img.shields.io/badge/platform-android%20|%20ios%20-blue.svg)](https://pub.dev/packages/modern_player)
 
 ## Features
 
