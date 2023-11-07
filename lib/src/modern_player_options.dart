@@ -21,12 +21,24 @@ class ModernPlayerVideo {
   /// diffrente qualities/resoltuion or video tracks.
   ModernPlayerVideo.multiple(this.videosData);
 
-  /// [ModernPlayerVideo.youtube] allow you to create a video player with youtube video id.
+  /// [ModernPlayerVideo.youtubeWithUrl] allow you to create a video player with youtube video url.
   ///
   /// It has an additional feature [fetchQualities], which can get different video quality/resoltuion
   /// from youtube and allow user to switch between those.
-  ModernPlayerVideo.youtube({required String id, this.fetchQualities}) {
-    videosData = [ModernPlayerVideoData.youtube(label: "Default", id: id)];
+  ModernPlayerVideo.youtubeWithId({required String id, this.fetchQualities}) {
+    videosData = [
+      ModernPlayerVideoData.youtubeWithId(label: "Default", id: id)
+    ];
+  }
+
+  /// [ModernPlayerVideo.youtubeWithUrl] allow you to create a video player with youtube video url.
+  ///
+  /// It has an additional feature [fetchQualities], which can get different video quality/resoltuion
+  /// from youtube and allow user to switch between those.
+  ModernPlayerVideo.youtubeWithUrl({required String url, this.fetchQualities}) {
+    videosData = [
+      ModernPlayerVideoData.youtubeWithUrl(label: "Default", url: url)
+    ];
   }
 }
 
@@ -65,9 +77,26 @@ class ModernPlayerVideoData {
 
   ///Constructs a [ModernPlayerVideoData] playing a video from obtained from the youtube.
   ///
+  ///The url of the youtube video is given by the [url] argument and must not be null.
+  ///And the [label] is displayed on quality selection on menu.
+  ModernPlayerVideoData.youtubeWithUrl(
+      {required this.label, required String url}) {
+    String? videoId = _youtubeParser(url);
+
+    if (videoId == null) {
+      throw Exception("Cannot get video from url. Please try with ID");
+    }
+
+    source = videoId;
+    sourceType = ModernPlayerSourceType.youtube;
+  }
+
+  ///Constructs a [ModernPlayerVideoData] playing a video from obtained from the youtube.
+  ///
   ///The Id of the youtube video is given by the [id] argument and must not be null.
   ///And the [label] is displayed on quality selection on menu.
-  ModernPlayerVideoData.youtube({required this.label, required String id}) {
+  ModernPlayerVideoData.youtubeWithId(
+      {required this.label, required String id}) {
     source = id;
     sourceType = ModernPlayerSourceType.youtube;
   }
@@ -80,6 +109,16 @@ class ModernPlayerVideoData {
     source = path;
     sourceType = ModernPlayerSourceType.asset;
   }
+
+  // Get youtube video id from url
+  String? _youtubeParser(String url) {
+    final regExp = RegExp(
+        r'^.*((youtu.be/)|(v/)|(\/u/\w/)|(embed/)|(watch\?))\??v?=?([^#&?]*).*');
+    final match = regExp.firstMatch(url);
+    return (match != null && match.group(7)!.length == 11)
+        ? match.group(7)
+        : null;
+  }
 }
 
 /// Modern Player Option gies some basic controls for video.
@@ -90,10 +129,13 @@ class ModernPlayerOptions {
   /// Set start time of video in milliseconds
   int? videoStartAt;
 
-  ModernPlayerOptions({
-    this.autoVisibilityPause = true,
-    this.videoStartAt,
-  });
+  /// When enabled, screen can go on sleep during the video is playing
+  bool? allowScreenSleep;
+
+  ModernPlayerOptions(
+      {this.autoVisibilityPause = true,
+      this.videoStartAt,
+      this.allowScreenSleep});
 }
 
 /// Controls option for Modern Player
@@ -168,6 +210,9 @@ class ModernPlayerThemeOptions {
   /// Icon for back button.
   Icon? backIcon;
 
+  /// This widget replace default ModernPlayer loading widget.
+  Widget? customLoadingWidget;
+
   /// Customize theme of progress slider theme.
   ModernPlayerProgressSliderTheme? progressSliderTheme;
 
@@ -185,6 +230,7 @@ class ModernPlayerThemeOptions {
       this.muteIcon,
       this.unmuteIcon,
       this.backIcon,
+      this.customLoadingWidget,
       this.progressSliderTheme,
       this.brightnessSlidertheme,
       this.volumeSlidertheme});
@@ -308,4 +354,50 @@ class ModernPlayerAudioTrackOptions {
 
   ModernPlayerAudioTrackOptions(
       {required this.source, required this.sourceType, this.isSelected});
+}
+
+/// Translation Option for Modern Player
+///
+/// With [ModernPlayerTranslationOptions] option you can give translated text or custom to menu item.
+class ModernPlayerTranslationOptions {
+  /// [qualityHeaderText] displayed on menu quality section in left side.
+  String? qualityHeaderText;
+
+  /// [playbackSpeedText] displayed on menu playback speed section in left side.
+  String? playbackSpeedText;
+
+  /// [defaultPlaybackSpeedText] displayed on 1x playback speed.
+  String? defaultPlaybackSpeedText;
+
+  /// [subtitleText] displayed on menu subtitle section in left side.
+  String? subtitleText;
+
+  /// [noneSubtitleText] displayed user seleted none.
+  String? noneSubtitleText;
+
+  /// [unavailableSubtitleText] displayed when subtitle in unavailabel.
+  String? unavailableSubtitleText;
+
+  /// [audioHeaderText] displayed on menu audio text in left side.
+  String? audioHeaderText;
+
+  /// [loadingAudioText] displayed when subtitle in unavailabel.
+  String? loadingAudioText;
+
+  /// [unavailableAudioText] displayed when subtitle in unavailabel.
+  String? unavailableAudioText;
+
+  /// [defaultAudioText] displayed on default selected audio text.
+  String? defaultAudioText;
+
+  ModernPlayerTranslationOptions.menu(
+      {this.qualityHeaderText,
+      this.playbackSpeedText,
+      this.defaultPlaybackSpeedText,
+      this.subtitleText,
+      this.unavailableSubtitleText,
+      this.audioHeaderText,
+      this.loadingAudioText,
+      this.defaultAudioText,
+      this.unavailableAudioText});
 }

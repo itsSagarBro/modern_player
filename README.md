@@ -52,7 +52,6 @@ With modern_player, you can provide a top-notch video playback experience to you
 - Custom ErrorBuilder
 - Placeholder Widget
 - Loop Support
-- Toggle screen sleep
 
 ## Installation
 

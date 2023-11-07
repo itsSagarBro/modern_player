@@ -16,6 +16,7 @@ class ModernPlayerControls extends StatefulWidget {
       required this.videos,
       required this.controlsOptions,
       required this.themeOptions,
+      required this.translationOptions,
       required this.onBackPressed});
 
   final VlcPlayerController player;
@@ -23,6 +24,7 @@ class ModernPlayerControls extends StatefulWidget {
   final List<ModernPlayerVideoData> videos;
   final ModernPlayerControlsOptions controlsOptions;
   final ModernPlayerThemeOptions themeOptions;
+  final ModernPlayerTranslationOptions translationOptions;
   final VoidCallback onBackPressed;
 
   @override
@@ -31,6 +33,8 @@ class ModernPlayerControls extends StatefulWidget {
 
 class _ModernPlayerControlsState extends State<ModernPlayerControls> {
   VlcPlayerController get player => widget.player;
+  ModernPlayerTranslationOptions get translationOptions =>
+      widget.translationOptions;
 
   Timer? _statelessTimer;
 
@@ -594,17 +598,19 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
         ),
         if (_isLoading)
           Positioned.fill(
-            child: Align(
-              alignment: Alignment.center,
-              child: SizedBox(
-                height: 75,
-                width: 75,
-                child: CircularProgressIndicator(
-                  color: widget.themeOptions.loadingColor ?? Colors.greenAccent,
-                  strokeCap: StrokeCap.round,
+            child: widget.themeOptions.customLoadingWidget ??
+                Align(
+                  alignment: Alignment.center,
+                  child: SizedBox(
+                    height: 50,
+                    width: 50,
+                    child: CircularProgressIndicator(
+                      color: widget.themeOptions.loadingColor ??
+                          Colors.greenAccent,
+                      strokeCap: StrokeCap.round,
+                    ),
+                  ),
                 ),
-              ),
-            ),
           )
       ],
     ));
@@ -766,9 +772,9 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
                   const SizedBox(
                     width: 20,
                   ),
-                  const Text(
-                    "Quality  ◉  ",
-                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  Text(
+                    "${translationOptions.qualityHeaderText ?? "Quality"}  ◉  ",
+                    style: const TextStyle(color: Colors.white, fontSize: 16),
                   ),
                   Text(
                     _currentVideoData.label,
@@ -794,13 +800,14 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
                   const SizedBox(
                     width: 20,
                   ),
-                  const Text(
-                    "Plaback speed  ◉  ",
-                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  Text(
+                    "${translationOptions.playbackSpeedText ?? "Plaback speed"}  ◉  ",
+                    style: const TextStyle(color: Colors.white, fontSize: 16),
                   ),
                   Text(
                     player.value.playbackSpeed == 1
-                        ? "Normal"
+                        ? translationOptions.defaultPlaybackSpeedText ??
+                            "Normal"
                         : "${player.value.playbackSpeed.toStringAsFixed(2)}x",
                     style: const TextStyle(color: Colors.white60, fontSize: 16),
                   )
@@ -845,55 +852,60 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
                     const SizedBox(
                       width: 20,
                     ),
-                    const Text(
-                      "Subtitles  ◉  ",
-                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    Text(
+                      "${translationOptions.subtitleText ?? "Subtitles"}  ◉  ",
+                      style: const TextStyle(color: Colors.white, fontSize: 16),
                     ),
                     Text(
                       _subtitleTracks!.entries.isNotEmpty
                           ? _subtitleTracks![player.value.activeSpuTrack] ??
+                              translationOptions.noneSubtitleText ??
                               "None"
-                          : "Unavailable",
+                          : translationOptions.unavailableSubtitleText ??
+                              "Unavailable",
                       style:
                           const TextStyle(color: Colors.white60, fontSize: 16),
                     )
                   ],
                 )
-              : const Row(
+              : Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.closed_caption_outlined,
                       color: Colors.white38,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 20,
                     ),
                     Text(
-                      "Subtitles  ◉  ",
-                      style: TextStyle(color: Colors.white38, fontSize: 16),
+                      "${translationOptions.subtitleText ?? "Subtitles"}  ◉  ",
+                      style:
+                          const TextStyle(color: Colors.white38, fontSize: 16),
                     ),
                     Text(
-                      "Unavailable",
-                      style: TextStyle(color: Colors.white38, fontSize: 16),
+                      translationOptions.unavailableSubtitleText ??
+                          "Unavailable",
+                      style:
+                          const TextStyle(color: Colors.white38, fontSize: 16),
                     )
                   ],
                 )
-          : const Row(
+          : Row(
               children: [
-                Icon(
+                const Icon(
                   Icons.closed_caption_outlined,
                   color: Colors.white38,
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 20,
                 ),
                 Text(
-                  "Subtitles  ◉  ",
-                  style: TextStyle(color: Colors.white38, fontSize: 16),
+                  "${translationOptions.subtitleText ?? "Subtitles"}  ◉  ",
+                  style: const TextStyle(color: Colors.white38, fontSize: 16),
                 ),
                 Text(
-                  "Unavailable",
-                  style: TextStyle(color: Colors.white38, fontSize: 16),
+                  translationOptions.unavailableSubtitleText ?? "Unavailable",
+                  style: const TextStyle(color: Colors.white38, fontSize: 16),
                 )
               ],
             ),
@@ -920,34 +932,34 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
                 const SizedBox(
                   width: 20,
                 ),
-                const Text(
-                  "Audio  ◉  ",
-                  style: TextStyle(color: Colors.white, fontSize: 16),
+                Text(
+                  "${translationOptions.audioHeaderText ?? "Audio"}  ◉  ",
+                  style: const TextStyle(color: Colors.white, fontSize: 16),
                 ),
                 Text(
                   _audioTracks == null
-                      ? "Loading"
+                      ? translationOptions.loadingAudioText ?? "Loading"
                       : _audioTracks![player.value.activeAudioTrack],
                   style: const TextStyle(color: Colors.white60, fontSize: 16),
                 )
               ],
             )
-          : const Row(
+          : Row(
               children: [
-                Icon(
+                const Icon(
                   Icons.closed_caption_outlined,
                   color: Colors.white38,
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 20,
                 ),
                 Text(
-                  "Audio  ◉  ",
-                  style: TextStyle(color: Colors.white38, fontSize: 16),
+                  "${translationOptions.audioHeaderText ?? "Audio"}  ◉  ",
+                  style: const TextStyle(color: Colors.white38, fontSize: 16),
                 ),
                 Text(
-                  "Unavailable",
-                  style: TextStyle(color: Colors.white38, fontSize: 16),
+                  translationOptions.unavailableAudioText ?? "Default",
+                  style: const TextStyle(color: Colors.white38, fontSize: 16),
                 )
               ],
             ),
@@ -1044,7 +1056,10 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
                         width: e == player.value.playbackSpeed ? 20 : 35,
                       ),
                       Text(
-                        e == 1 ? "Normal" : "${e.toStringAsFixed(2)}x",
+                        e == 1
+                            ? translationOptions.defaultPlaybackSpeedText ??
+                                "Normal"
+                            : "${e.toStringAsFixed(2)}x",
                         style:
                             const TextStyle(color: Colors.white, fontSize: 16),
                       ),

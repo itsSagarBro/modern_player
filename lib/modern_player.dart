@@ -14,4 +14,5 @@ export 'src/modern_player_options.dart'
         ModernPlayerCustomActionButton,
         ModernPlayerSubtitleOptions,
         ModernPlayerAudioTrackOptions,
-        ModernPlayerToastSliderThemeOption;
+        ModernPlayerToastSliderThemeOption,
+        ModernPlayerTranslationOptions;

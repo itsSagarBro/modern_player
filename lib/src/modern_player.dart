@@ -6,6 +6,7 @@ import 'package:modern_player/src/modern_player_controls.dart';
 import 'package:modern_player/src/modern_player_options.dart';
 import 'package:modern_player/src/modern_players_enums.dart';
 import 'package:visibility_detector/visibility_detector.dart';
+import 'package:wakelock/wakelock.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 /// Modern Player gives you a controller for flutter_vlc_player.
@@ -22,6 +23,7 @@ class ModernPlayer extends StatefulWidget {
       this.options,
       this.controlsOptions,
       this.themeOptions,
+      this.translationOptions,
       this.onBackPressed});
 
   /// Video quality options for multiple qualities. If you have only one quality video just add one in list.
@@ -44,6 +46,9 @@ class ModernPlayer extends StatefulWidget {
   /// Control theme of controls.
   final ModernPlayerThemeOptions? themeOptions;
 
+  /// With [translationOptions] option you can give translated text or custom to menu item.
+  final ModernPlayerTranslationOptions? translationOptions;
+
   /// Callback when user pressed back button of controls.
   final VoidCallback? onBackPressed;
 
@@ -54,6 +59,7 @@ class ModernPlayer extends StatefulWidget {
       ModernPlayerOptions? options,
       ModernPlayerControlsOptions? controlsOptions,
       ModernPlayerThemeOptions? themeOptions,
+      ModernPlayerTranslationOptions? translationOptions,
       VoidCallback? onBackPressed}) {
     return ModernPlayer._(
       video: video,
@@ -62,6 +68,7 @@ class ModernPlayer extends StatefulWidget {
       options: options,
       controlsOptions: controlsOptions,
       themeOptions: themeOptions,
+      translationOptions: translationOptions,
       onBackPressed: onBackPressed,
     );
   }
@@ -84,6 +91,10 @@ class _ModernPlayerState extends State<ModernPlayer> {
   @override
   void initState() {
     super.initState();
+
+    if (widget.options?.allowScreenSleep ?? false == false) {
+      Wakelock.enable();
+    }
 
     videosData = widget.video.videosData;
 
@@ -235,8 +246,14 @@ class _ModernPlayerState extends State<ModernPlayer> {
     if (_playerController.value.isInitialized) {
       _playerController.dispose();
     }
+
     _playerController.removeListener(_checkVideoLoaded);
     _playerController.removeOnInitListener(_onInitialize);
+
+    if (widget.options?.allowScreenSleep ?? false == false) {
+      Wakelock.disable();
+    }
+
     isDisposed = true;
   }
 
@@ -268,6 +285,8 @@ class _ModernPlayerState extends State<ModernPlayer> {
                       widget.controlsOptions ?? ModernPlayerControlsOptions(),
                   themeOptions:
                       widget.themeOptions ?? ModernPlayerThemeOptions(),
+                  translationOptions: widget.translationOptions ??
+                      ModernPlayerTranslationOptions.menu(),
                   viewSize: Size(MediaQuery.of(context).size.width,
                       MediaQuery.of(context).size.height),
                   onBackPressed: () {

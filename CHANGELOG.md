@@ -1,13 +1,16 @@
-## 0.0.35
+## 0.0.4
 
+* Added toggle for screen sleep in ModernPlayerOptions
 * Added badges in README.md
 * Added youtube videos support
 * Added quality selection for youtube video
 * Added quality based video source type
 * Added play video from asset
+* Added support for custom loading widget
+* Added translation feature for menu items
 * Fixed volume slider error
-* Fixed subtitle menu option error on .mp4
-* Fixed audio menu option error on .mp4
+* Fixed subtitle menu option error on when subtitle is unavailable
+* Fixed audio menu option error on when audio is unavailable
 * Changes in player widget
 
 ## 0.0.3
