@@ -1,5 +1,6 @@
 ## 0.0.35
 
+* Added badges in README.md
 * Added youtube videos support
 * Added quality selection for youtube video
 * Added quality based video source type
@@ -7,6 +8,7 @@
 * Fixed volume slider error
 * Fixed subtitle menu option error on .mp4
 * Fixed audio menu option error on .mp4
+* Changes in player widget
 
 ## 0.0.3
 

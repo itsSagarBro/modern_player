@@ -72,6 +72,18 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ]);
 
+  Widget w = ModernPlayer.createPlayer(
+      video: ModernPlayerVideo.multiple([
+    ModernPlayerVideoData.network(
+        label: "480p",
+        url:
+            "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4"),
+    ModernPlayerVideoData.network(
+        label: "720p",
+        url:
+            "https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4")
+  ]));
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -87,11 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 250,
               child: ModernPlayer.createPlayer(
                   video: ModernPlayerVideo.youtube(
-                      id: 'EiiOYwqk3A0', fetchQualities: true),
-                  subtitles: [],
-                  audioTracks: [],
-                  themeOptions: themeOptions,
-                  controlsOptions: controlsOptions),
+                      id: 'EiiOYwqk3A0', fetchQualities: true)),
             )
           ],
         ),

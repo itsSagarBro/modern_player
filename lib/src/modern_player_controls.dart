@@ -218,6 +218,8 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
             });
           });
         });
+
+        yt.close();
       } else {
         await player
             .setMediaFromAsset(videoData.source,
