@@ -87,7 +87,8 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 250,
               child: ModernPlayer.createPlayer(
                 video: ModernPlayerVideo.youtubeWithUrl(
-                    url: 'https://www.youtube.com/watch?v=UFWBON_EuQg',
+                    url:
+                        'https://www.youtube.com/watch?v=vEHeI_wBzu0&ab_channel=UntitledStudio',
                     fetchQualities: true),
               ),
             )

@@ -20,5 +20,5 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-  assets:
-    - assets/wishdragon.mp4
+  # assets:
+  #   - assets/sample.mp4

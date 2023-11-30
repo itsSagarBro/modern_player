@@ -1,7 +1,7 @@
 library modern_player;
 
 export 'src/modern_player.dart' show ModernPlayer;
-export 'src/modern_players_enums.dart'
+export 'src/others/modern_players_enums.dart'
     show ModernPlayerSubtitleSourceType, ModernPlayerAudioSourceType;
 export 'src/modern_player_options.dart'
     show
@@ -15,4 +15,5 @@ export 'src/modern_player_options.dart'
         ModernPlayerSubtitleOptions,
         ModernPlayerAudioTrackOptions,
         ModernPlayerToastSliderThemeOption,
-        ModernPlayerTranslationOptions;
+        ModernPlayerTranslationOptions,
+        ModernPlayerCallbackOptions;

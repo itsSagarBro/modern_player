@@ -1,3 +1,8 @@
+## 0.0.5
+
+* Added wakelock_plus instead of wakelock
+* Added callback options
+
 ## 0.0.4
 
 * Added toggle for screen sleep in ModernPlayerOptions

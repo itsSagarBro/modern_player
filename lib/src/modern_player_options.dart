@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:modern_player/src/modern_players_enums.dart';
+import 'package:modern_player/src/others/modern_players_enums.dart';
 
 /// [ModernPlayerVideo] has multiple type of player.
 ///
@@ -400,4 +400,61 @@ class ModernPlayerTranslationOptions {
       this.loadingAudioText,
       this.defaultAudioText,
       this.unavailableAudioText});
+}
+
+/// Callbacks Option for Modern Player
+///
+/// With [ModernPlayerCallbackOptions] option you can perform custom fuction on callback.
+class ModernPlayerCallbackOptions {
+  /// [onPlay] calls when video state changed from pause to play.
+  Function? onPlay;
+
+  /// [onPause] calls when video state changed from play to pause.
+  Function? onPause;
+
+  /// [onSeek] calls when user seek the video.
+  /// It also has [int] which return where the video is seeked in milliseconds.
+  Function(int milliseconds)? onSeek;
+
+  /// [onSeekForward] calls when user seek the video forward (10 sec).
+  Function? onSeekForward;
+
+  /// [onSeekBackward] calls when user seek the video backward (10 sec).
+  Function? onSeekBackward;
+
+  /// [onChangedQuality] calls when user changed the quality of video.
+  Function(String title, String source)? onChangedQuality;
+
+  /// [onChangedSubtitle] calls when user changed the subtitle track.
+  Function(int selectedSubtitle)? onChangedSubtitle;
+
+  /// [onChangedAudio] calls when user changed the audio track.
+  Function(int selectedAudio)? onChangedAudio;
+
+  /// [onChangedPlaybackSpeed] calls when user changed the playback speed.
+  /// It also has [double] which return where selected speed.
+  Function(double selectedSpeed)? onChangedPlaybackSpeed;
+
+  /// [onBackPressed] calls when user clicked back button.
+  Function? onBackPressed;
+
+  /// [onMenuPressed] calls when user clicked menu button.
+  Function? onMenuPressed;
+
+  /// [onMutePressed] calls when user clicked mute button.
+  Function? onMutePressed;
+
+  ModernPlayerCallbackOptions(
+      {this.onPlay,
+      this.onPause,
+      this.onSeek,
+      this.onSeekForward,
+      this.onSeekBackward,
+      this.onChangedQuality,
+      this.onChangedSubtitle,
+      this.onChangedAudio,
+      this.onChangedPlaybackSpeed,
+      this.onBackPressed,
+      this.onMenuPressed,
+      this.onMutePressed});
 }

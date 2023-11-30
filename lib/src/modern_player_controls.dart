@@ -4,9 +4,13 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:modern_player/modern_player.dart';
-import 'package:modern_player/src/modern_players_enums.dart';
+import 'package:modern_player/src/modern_player_options.dart';
+import 'package:modern_player/src/others/modern_players_enums.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
+
+import 'others/Modern_player_utils.dart';
+import 'widgets/modern_player_menus.dart';
 
 class ModernPlayerControls extends StatefulWidget {
   const ModernPlayerControls(
@@ -17,7 +21,7 @@ class ModernPlayerControls extends StatefulWidget {
       required this.controlsOptions,
       required this.themeOptions,
       required this.translationOptions,
-      required this.onBackPressed});
+      required this.callbackOptions});
 
   final VlcPlayerController player;
   final Size viewSize;
@@ -25,7 +29,7 @@ class ModernPlayerControls extends StatefulWidget {
   final ModernPlayerControlsOptions controlsOptions;
   final ModernPlayerThemeOptions themeOptions;
   final ModernPlayerTranslationOptions translationOptions;
-  final VoidCallback onBackPressed;
+  final ModernPlayerCallbackOptions callbackOptions;
 
   @override
   State<ModernPlayerControls> createState() => _ModernPlayerControlsState();
@@ -142,10 +146,14 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
       setState(() {
         player.pause();
       });
+
+      widget.callbackOptions.onPause?.call();
     } else {
       setState(() {
         player.play();
       });
+
+      widget.callbackOptions.onPlay?.call();
     }
   }
 
@@ -240,16 +248,21 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
       }
     });
 
+    widget.callbackOptions.onChangedQuality
+        ?.call(videoData.label, videoData.source);
+
     // Refresh subtitle and audio tracks
     _getTracks();
   }
 
   void _changeSubtitleTrack(MapEntry subtitle) async {
     await player.setSpuTrack(subtitle.key);
+    widget.callbackOptions.onChangedSubtitle?.call(subtitle.key);
   }
 
   void _changeAudioTrack(MapEntry subtitle) async {
     await player.setAudioTrack(subtitle.key);
+    widget.callbackOptions.onChangedAudio?.call(subtitle.key);
   }
 
   void _seekTo(Duration position) async {
@@ -264,6 +277,8 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
           _currentPos = position;
           _seekPos = 0;
         });
+
+        widget.callbackOptions.onSeek?.call(position.inMilliseconds);
       });
     });
   }
@@ -282,6 +297,8 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
           _currentPos = Duration(seconds: positionInSeconds);
           _seekPos = 0;
         });
+
+        widget.callbackOptions.onSeekForward?.call();
       });
     });
   }
@@ -300,6 +317,8 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
           _currentPos = Duration(seconds: positionInSeconds);
           _seekPos = 0;
         });
+
+        widget.callbackOptions.onSeekBackward?.call();
       });
     });
   }
@@ -395,10 +414,6 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
     setState(() {});
   }
 
-  String getFormattedDuration(Duration duration) {
-    return "${duration.inHours > 0 ? "${(duration.inHours % 24).toString().padLeft(2, '0')}:" : ""}${(duration.inMinutes % 60).toString().padLeft(2, '0')}:${(duration.inSeconds % 60).toString().padLeft(2, '0')}";
-  }
-
   @override
   Widget build(BuildContext context) {
     return Positioned.fill(
@@ -434,7 +449,8 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
                                     width: 50,
                                     child: InkWell(
                                       onTap: () {
-                                        widget.onBackPressed.call();
+                                        widget.callbackOptions.onBackPressed
+                                            ?.call();
                                       },
                                       child: Card(
                                         color: getIconsBackgroundColor(),
@@ -497,6 +513,9 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
                                             player.setVolume(100);
                                           }
                                         });
+
+                                        widget.callbackOptions.onMutePressed
+                                            ?.call();
                                       },
                                       child: Card(
                                         color: getIconsBackgroundColor(),
@@ -526,6 +545,9 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
                                       onTap: () {
                                         _startHideTimer();
                                         showOptions(context);
+
+                                        widget.callbackOptions.onMenuPressed
+                                            ?.call();
                                       },
                                       child: Card(
                                         color: getIconsBackgroundColor(),
@@ -598,10 +620,9 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
         ),
         if (_isLoading)
           Positioned.fill(
-            child: widget.themeOptions.customLoadingWidget ??
-                Align(
-                  alignment: Alignment.center,
-                  child: SizedBox(
+            child: Center(
+              child: widget.themeOptions.customLoadingWidget ??
+                  SizedBox(
                     height: 50,
                     width: 50,
                     child: CircularProgressIndicator(
@@ -610,7 +631,7 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
                       strokeCap: StrokeCap.round,
                     ),
                   ),
-                ),
+            ),
           )
       ],
     ));
@@ -761,7 +782,11 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
             GestureDetector(
               onTap: () {
                 Navigator.pop(context);
-                _showQualityOptions();
+                ModernPlayerMenus().showQualityOptions(context,
+                    menuColor: getMenuBackgroundColor(),
+                    currentData: _currentVideoData,
+                    allData: widget.videos,
+                    onChangedQuality: _changeVideoQuality);
               },
               child: Row(
                 children: [
@@ -789,7 +814,15 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
             GestureDetector(
               onTap: () {
                 Navigator.pop(context);
-                showPlabackSpeedOptions();
+                ModernPlayerMenus().showPlabackSpeedOptions(context,
+                    menuColor: getMenuBackgroundColor(),
+                    text:
+                        translationOptions.defaultPlaybackSpeedText ?? "Normal",
+                    currentSpeed: player.value.playbackSpeed,
+                    allSpeeds: _playbackSpeeds, onChnagedSpeed: (speed) {
+                  player.setPlaybackSpeed(speed);
+                  widget.callbackOptions.onChangedPlaybackSpeed?.call(speed);
+                });
               },
               child: Row(
                 children: [
@@ -837,7 +870,11 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
         if (_subtitleTracks != null) {
           if (_subtitleTracks!.entries.isNotEmpty) {
             Navigator.pop(context);
-            showSubtitleOptions();
+            ModernPlayerMenus().showSubtitleOptions(context,
+                menuColor: getMenuBackgroundColor(),
+                activeTrack: player.value.activeSpuTrack,
+                allTracks: _subtitleTracks!,
+                onChangedSubtitle: _changeSubtitleTrack);
           }
         }
       },
@@ -918,7 +955,11 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
         if (_audioTracks != null) {
           if (_audioTracks![player.value.activeAudioTrack] != null) {
             Navigator.pop(context);
-            _showAudioOptions();
+            ModernPlayerMenus().showAudioOptions(context,
+                menuColor: getMenuBackgroundColor(),
+                activeTrack: player.value.activeAudioTrack,
+                allTracks: _audioTracks!,
+                onChangedAudio: _changeAudioTrack);
           }
         }
       },
@@ -963,242 +1004,6 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
                 )
               ],
             ),
-    );
-  }
-
-  void _showQualityOptions() {
-    showModalBottomSheet(
-      context: context,
-      useSafeArea: true,
-      showDragHandle: true,
-      backgroundColor: getMenuBackgroundColor(),
-      constraints: const BoxConstraints(maxWidth: 400),
-      builder: (context) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ...widget.videos.map(
-              (e) => InkWell(
-                onTap: () {
-                  if (e.label != _currentVideoData.label) {
-                    Navigator.pop(context);
-                    _changeVideoQuality(e);
-                  }
-                },
-                child: Container(
-                  margin: const EdgeInsets.symmetric(vertical: 8),
-                  child: Row(
-                    children: [
-                      if (e.label == _currentVideoData.label)
-                        const SizedBox(
-                          width: 15,
-                          child: Icon(
-                            Icons.check_rounded,
-                            color: Colors.white,
-                          ),
-                        ),
-                      SizedBox(
-                        width: e.label == _currentVideoData.label ? 20 : 35,
-                      ),
-                      Text(
-                        e.label,
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 16),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 10,
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  void showPlabackSpeedOptions() {
-    showModalBottomSheet(
-      context: context,
-      useSafeArea: true,
-      showDragHandle: true,
-      backgroundColor: getMenuBackgroundColor(),
-      constraints: const BoxConstraints(maxWidth: 400),
-      builder: (context) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ..._playbackSpeeds.map(
-              (e) => InkWell(
-                onTap: () {
-                  if (e != player.value.playbackSpeed) {
-                    player.setPlaybackSpeed(e);
-                    Navigator.pop(context);
-                  }
-                },
-                child: Container(
-                  margin: const EdgeInsets.symmetric(vertical: 8),
-                  child: Row(
-                    children: [
-                      if (e == player.value.playbackSpeed)
-                        const SizedBox(
-                          width: 15,
-                          child: Icon(
-                            Icons.check_rounded,
-                            color: Colors.white,
-                          ),
-                        ),
-                      SizedBox(
-                        width: e == player.value.playbackSpeed ? 20 : 35,
-                      ),
-                      Text(
-                        e == 1
-                            ? translationOptions.defaultPlaybackSpeedText ??
-                                "Normal"
-                            : "${e.toStringAsFixed(2)}x",
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 16),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 10,
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  void showSubtitleOptions() {
-    showModalBottomSheet(
-      context: context,
-      useSafeArea: true,
-      isScrollControlled: true,
-      showDragHandle: true,
-      backgroundColor: getMenuBackgroundColor(),
-      constraints: const BoxConstraints(maxWidth: 400),
-      builder: (context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _subtitleListItelWidget(const MapEntry(-1, "None"), context),
-              ..._subtitleTracks!.entries.map(
-                (e) => _subtitleListItelWidget(e, context),
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  InkWell _subtitleListItelWidget(
-      MapEntry<dynamic, dynamic> e, BuildContext context) {
-    return InkWell(
-      onTap: () {
-        if (e.key != player.value.activeSpuTrack) {
-          Navigator.pop(context);
-          _changeSubtitleTrack(e);
-        }
-      },
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 8),
-        child: Row(
-          children: [
-            if (e.value == _subtitleTracks![player.value.activeSpuTrack] ||
-                e.key == -1 &&
-                    _subtitleTracks![player.value.activeSpuTrack] == null)
-              const SizedBox(
-                width: 15,
-                child: Icon(
-                  Icons.check_rounded,
-                  color: Colors.white,
-                ),
-              ),
-            SizedBox(
-              width: e.value == _subtitleTracks![player.value.activeSpuTrack] ||
-                      e.key == -1 &&
-                          _subtitleTracks![player.value.activeSpuTrack] == null
-                  ? 20
-                  : 35,
-            ),
-            Text(
-              e.value,
-              style: const TextStyle(color: Colors.white, fontSize: 16),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showAudioOptions() {
-    showModalBottomSheet(
-      context: context,
-      useSafeArea: true,
-      showDragHandle: true,
-      backgroundColor: getMenuBackgroundColor(),
-      constraints: const BoxConstraints(maxWidth: 400),
-      builder: (context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ..._audioTracks!.entries.map(
-                (e) => InkWell(
-                  onTap: () {
-                    if (e.key != player.value.activeAudioTrack) {
-                      Navigator.pop(context);
-                      _changeAudioTrack(e);
-                    }
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(vertical: 8),
-                    child: Row(
-                      children: [
-                        if (e.value ==
-                            _audioTracks![player.value.activeAudioTrack])
-                          const SizedBox(
-                            width: 15,
-                            child: Icon(
-                              Icons.check_rounded,
-                              color: Colors.white,
-                            ),
-                          ),
-                        SizedBox(
-                          width: e.value ==
-                                  _audioTracks![player.value.activeAudioTrack]
-                              ? 20
-                              : 35,
-                        ),
-                        Text(
-                          e.value,
-                          style: const TextStyle(
-                              color: Colors.white, fontSize: 16),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 

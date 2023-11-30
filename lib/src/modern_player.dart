@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:modern_player/src/modern_player_controls.dart';
 import 'package:modern_player/src/modern_player_options.dart';
-import 'package:modern_player/src/modern_players_enums.dart';
+import 'package:modern_player/src/others/modern_players_enums.dart';
 import 'package:visibility_detector/visibility_detector.dart';
-import 'package:wakelock/wakelock.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 /// Modern Player gives you a controller for flutter_vlc_player.
@@ -24,7 +24,7 @@ class ModernPlayer extends StatefulWidget {
       this.controlsOptions,
       this.themeOptions,
       this.translationOptions,
-      this.onBackPressed});
+      this.callbackOptions});
 
   /// Video quality options for multiple qualities. If you have only one quality video just add one in list.
   final ModernPlayerVideo video;
@@ -49,8 +49,8 @@ class ModernPlayer extends StatefulWidget {
   /// With [translationOptions] option you can give translated text or custom to menu item.
   final ModernPlayerTranslationOptions? translationOptions;
 
-  /// Callback when user pressed back button of controls.
-  final VoidCallback? onBackPressed;
+  /// With [callbackOptions] option you can perform custom actions on callback.
+  final ModernPlayerCallbackOptions? callbackOptions;
 
   static Widget createPlayer(
       {required ModernPlayerVideo video,
@@ -60,7 +60,7 @@ class ModernPlayer extends StatefulWidget {
       ModernPlayerControlsOptions? controlsOptions,
       ModernPlayerThemeOptions? themeOptions,
       ModernPlayerTranslationOptions? translationOptions,
-      VoidCallback? onBackPressed}) {
+      ModernPlayerCallbackOptions? callbackOptions}) {
     return ModernPlayer._(
       video: video,
       subtitles: subtitles ?? [],
@@ -69,7 +69,7 @@ class ModernPlayer extends StatefulWidget {
       controlsOptions: controlsOptions,
       themeOptions: themeOptions,
       translationOptions: translationOptions,
-      onBackPressed: onBackPressed,
+      callbackOptions: callbackOptions,
     );
   }
 
@@ -93,7 +93,7 @@ class _ModernPlayerState extends State<ModernPlayer> {
     super.initState();
 
     if (widget.options?.allowScreenSleep ?? false == false) {
-      Wakelock.enable();
+      WakelockPlus.enable();
     }
 
     videosData = widget.video.videosData;
@@ -249,7 +249,7 @@ class _ModernPlayerState extends State<ModernPlayer> {
     _playerController.removeOnInitListener(_onInitialize);
 
     if (widget.options?.allowScreenSleep ?? false == false) {
-      Wakelock.disable();
+      WakelockPlus.disable();
     }
 
     isDisposed = true;
@@ -287,22 +287,21 @@ class _ModernPlayerState extends State<ModernPlayer> {
                       ModernPlayerTranslationOptions.menu(),
                   viewSize: Size(MediaQuery.of(context).size.width,
                       MediaQuery.of(context).size.height),
-                  onBackPressed: () {
-                    if (widget.onBackPressed != null) {
-                      widget.onBackPressed!.call();
-                    }
-                  },
+                  callbackOptions:
+                      widget.callbackOptions ?? ModernPlayerCallbackOptions(),
                 )
             ],
           )
         : Center(
             child: SizedBox(
-              height: 75,
-              width: 75,
-              child: CircularProgressIndicator(
-                color: widget.themeOptions?.loadingColor ?? Colors.greenAccent,
-                strokeCap: StrokeCap.round,
-              ),
+              height: 50,
+              width: 50,
+              child: widget.themeOptions?.customLoadingWidget ??
+                  CircularProgressIndicator(
+                    color:
+                        widget.themeOptions?.loadingColor ?? Colors.greenAccent,
+                    strokeCap: StrokeCap.round,
+                  ),
             ),
           );
   }
