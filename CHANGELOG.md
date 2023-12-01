@@ -1,3 +1,7 @@
+## 0.0.6
+
+* Fixed "Target of URI doesn't exist: 'others/Modern_player_utils.dart'"
+
 ## 0.0.5
 
 * Added wakelock_plus instead of wakelock
