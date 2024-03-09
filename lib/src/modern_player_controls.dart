@@ -19,6 +19,7 @@ class ModernPlayerControls extends StatefulWidget {
       required this.viewSize,
       required this.videos,
       required this.controlsOptions,
+      required this.defaultSelectionOptions,
       required this.themeOptions,
       required this.translationOptions,
       required this.callbackOptions});
@@ -27,6 +28,7 @@ class ModernPlayerControls extends StatefulWidget {
   final Size viewSize;
   final List<ModernPlayerVideoData> videos;
   final ModernPlayerControlsOptions controlsOptions;
+  final ModernPlayerDefaultSelectionOptions defaultSelectionOptions;
   final ModernPlayerThemeOptions themeOptions;
   final ModernPlayerTranslationOptions translationOptions;
   final ModernPlayerCallbackOptions callbackOptions;
@@ -68,10 +70,10 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
   int _seekPos = 0;
 
   /// List of audio tracks
-  Map? _audioTracks;
+  Map<int, String>? _audioTracks;
 
   /// List of subtitle tracks
-  Map? _subtitleTracks;
+  Map<int, String>? _subtitleTracks;
 
   /// List of playback speeds
   final List<double> _playbackSpeeds = [
@@ -136,8 +138,60 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
 
   /// Get audio and subtitle tracks
   void _getTracks() async {
-    _audioTracks = await player.getAudioTracks();
-    _subtitleTracks = await player.getSpuTracks();
+    // Run in parallel - they don't depend on each other.
+    final tracksFutures = Future.wait([
+      player.getAudioTracks(),
+      player.getSpuTracks(),
+    ]);
+
+    final results = await tracksFutures;
+    _audioTracks = results[0];
+    _subtitleTracks = results[1];
+
+    await Future.wait([
+      _setDefaultSubtitleTrack(_subtitleTracks),
+      _setDefaultAudioTrack(_subtitleTracks),
+    ]);
+  }
+
+  /// Helper function to set default track for subtitle, audio, etc
+  Future<void> _setDefaultTrack(
+      {required DefaultSelector? selector,
+      required Map<int, String>? trackEntries,
+      required Function(int) setTrackFunction}) async {
+    if (selector == null || trackEntries == null || trackEntries.isEmpty) {
+      return;
+    }
+
+    int? defaultIndex;
+    for (final entry in trackEntries.entries) {
+      if (selector(entry.key, entry.value)) {
+        defaultIndex = entry.key;
+        break;
+      }
+    }
+
+    if (defaultIndex != null) {
+      setTrackFunction(defaultIndex);
+    }
+  }
+
+  /// Set default subtitle track
+  Future<void> _setDefaultSubtitleTrack(Map<int, String>? tracks) async {
+    await _setDefaultTrack(
+      selector: widget.defaultSelectionOptions.defaultSubtitleSelector,
+      trackEntries: tracks,
+      setTrackFunction: player.setSpuTrack,
+    );
+  }
+
+  /// Set default audio track
+  Future<void> _setDefaultAudioTrack(Map<int, String>? tracks) async {
+    await _setDefaultTrack(
+      selector: widget.defaultSelectionOptions.defaultAudioSelector,
+      trackEntries: tracks,
+      setTrackFunction: player.setAudioTrack,
+    );
   }
 
   /// Toggle between play and pause
@@ -980,7 +1034,7 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
                 Text(
                   _audioTracks == null
                       ? translationOptions.loadingAudioText ?? "Loading"
-                      : _audioTracks![player.value.activeAudioTrack],
+                      : _audioTracks![player.value.activeAudioTrack]!,
                   style: const TextStyle(color: Colors.white60, fontSize: 16),
                 )
               ],

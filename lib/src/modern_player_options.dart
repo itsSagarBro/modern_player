@@ -314,6 +314,19 @@ class ModernPlayerCustomActionButton {
       {required this.icon, this.onPressed, this.onDoubleTap, this.onLongPress});
 }
 
+typedef DefaultSelector = bool Function(int index, String label);
+
+class ModernPlayerDefaultSelectionOptions {
+  DefaultSelector? defaultSubtitleSelector;
+  DefaultSelector? defaultAudioSelector;
+  DefaultSelector? defaultQualitySelector;
+
+  ModernPlayerDefaultSelectionOptions(
+      {this.defaultSubtitleSelector,
+      this.defaultAudioSelector,
+      this.defaultQualitySelector});
+}
+
 /// Subtitle Option for Modern Player
 ///
 /// With subtitle option you can add subtitle in video from other sources.

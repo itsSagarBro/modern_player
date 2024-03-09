@@ -9,6 +9,7 @@ export 'src/modern_player_options.dart'
         ModernPlayerOptions,
         ModernPlayerVideoData,
         ModernPlayerControlsOptions,
+        ModernPlayerDefaultSelectionOptions,
         ModernPlayerThemeOptions,
         ModernPlayerProgressSliderTheme,
         ModernPlayerCustomActionButton,
