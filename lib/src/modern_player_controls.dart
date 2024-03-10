@@ -156,30 +156,40 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
 
   /// Helper function to set default track for subtitle, audio, etc
   Future<void> _setDefaultTrack(
-      {required DefaultSelector? selector,
+      {required List<DefaultSelector>? selectors,
       required Map<int, String>? trackEntries,
       required Function(int) setTrackFunction}) async {
-    if (selector == null || trackEntries == null || trackEntries.isEmpty) {
+    if (selectors == null || trackEntries == null || trackEntries.isEmpty) {
       return;
     }
 
-    int? defaultIndex;
-    for (final entry in trackEntries.entries) {
-      if (selector(entry.key, entry.value)) {
-        defaultIndex = entry.key;
-        break;
-      }
-    }
+    for (final selector in selectors) {
+      switch (selector) {
+        case DefaultSelectorCustom():
+          int? defaultIndex;
+          for (final entry in trackEntries.entries) {
+            if (selector.shouldUseTrack(entry.key, entry.value)) {
+              defaultIndex = entry.key;
+              break;
+            }
+          }
 
-    if (defaultIndex != null) {
-      setTrackFunction(defaultIndex);
+          if (defaultIndex != null) {
+            setTrackFunction(defaultIndex);
+            return;
+            // Else, if no track is found, loop to the next selector
+          }
+        case DefaultSelectorOff():
+          setTrackFunction(-1);
+          return;
+      }
     }
   }
 
   /// Set default subtitle track
   Future<void> _setDefaultSubtitleTrack(Map<int, String>? tracks) async {
     await _setDefaultTrack(
-      selector: widget.defaultSelectionOptions.defaultSubtitleSelector,
+      selectors: widget.defaultSelectionOptions.defaultSubtitleSelectors,
       trackEntries: tracks,
       setTrackFunction: player.setSpuTrack,
     );
@@ -188,7 +198,7 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
   /// Set default audio track
   Future<void> _setDefaultAudioTrack(Map<int, String>? tracks) async {
     await _setDefaultTrack(
-      selector: widget.defaultSelectionOptions.defaultAudioSelector,
+      selectors: widget.defaultSelectionOptions.defaultAudioSelectors,
       trackEntries: tracks,
       setTrackFunction: player.setAudioTrack,
     );

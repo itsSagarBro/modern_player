@@ -17,4 +17,7 @@ export 'src/modern_player_options.dart'
         ModernPlayerAudioTrackOptions,
         ModernPlayerToastSliderThemeOption,
         ModernPlayerTranslationOptions,
-        ModernPlayerCallbackOptions;
+        ModernPlayerCallbackOptions,
+        DefaultSelector,
+        DefaultSelectorCustom,
+        DefaultSelectorOff;

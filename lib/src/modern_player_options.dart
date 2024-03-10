@@ -314,17 +314,29 @@ class ModernPlayerCustomActionButton {
       {required this.icon, this.onPressed, this.onDoubleTap, this.onLongPress});
 }
 
-typedef DefaultSelector = bool Function(int index, String label);
+/// The top level type which defines the strategies for selecting tracks
+sealed class DefaultSelector {}
+
+/// Will default to disabling this track
+class DefaultSelectorOff extends DefaultSelector {}
+
+/// Provide custom logic for selecting a track
+/// It will pick the first track that returns true
+class DefaultSelectorCustom extends DefaultSelector {
+  final bool Function(int index, String label) shouldUseTrack;
+
+  DefaultSelectorCustom(this.shouldUseTrack);
+}
 
 class ModernPlayerDefaultSelectionOptions {
-  DefaultSelector? defaultSubtitleSelector;
-  DefaultSelector? defaultAudioSelector;
-  DefaultSelector? defaultQualitySelector;
+  List<DefaultSelector>? defaultSubtitleSelectors;
+  List<DefaultSelector>? defaultAudioSelectors;
+  List<DefaultSelector>? defaultQualitySelectors;
 
   ModernPlayerDefaultSelectionOptions(
-      {this.defaultSubtitleSelector,
-      this.defaultAudioSelector,
-      this.defaultQualitySelector});
+      {this.defaultSubtitleSelectors,
+      this.defaultAudioSelectors,
+      this.defaultQualitySelectors});
 }
 
 /// Subtitle Option for Modern Player
