@@ -150,7 +150,7 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
 
     await Future.wait([
       _setDefaultSubtitleTrack(_subtitleTracks),
-      _setDefaultAudioTrack(_subtitleTracks),
+      _setDefaultAudioTrack(_audioTracks),
     ]);
   }
 
