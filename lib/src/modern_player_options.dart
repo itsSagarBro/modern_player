@@ -57,13 +57,18 @@ class ModernPlayerVideoData {
   /// This can define type of data source of Modern Player.
   ModernPlayerSourceType sourceType = ModernPlayerSourceType.asset;
 
+  /// Url of audio for override [For youtube obly]
+  String? audioOverrride;
+
   ///Constructs a [ModernPlayerVideoData] playing a video from obtained from the network.
   ///
-  ///The URL for the video is given by the [url] argument and must not be null.
-  ///And the [label] is displayed on quality selection on menu.
-  ModernPlayerVideoData.network({required this.label, required String url}) {
+  ///The URL for the video is given by the [url] argument and must not be null
+  ///and the [label] is displayed on quality selection on menu.
+  ModernPlayerVideoData.network(
+      {required this.label, required String url, String? audioOverride}) {
     source = url;
     sourceType = ModernPlayerSourceType.network;
+    audioOverrride = audioOverride;
   }
 
   ///Constructs a [ModernPlayerVideoData] playing a video from obtained from the local file.

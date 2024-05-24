@@ -131,15 +131,25 @@ class _ModernPlayerState extends State<ModernPlayer> {
       if (widget.video.fetchQualities ?? false) {
         List<ModernPlayerVideoData> ytVideos = List.empty(growable: true);
 
-        for (var element in manifest.muxed) {
-          ytVideos.insert(
-              0,
-              ModernPlayerVideoData.network(
-                  label: element.qualityLabel, url: element.url.toString()));
+        for (var element in manifest.videoOnly) {
+          ModernPlayerVideoData videoData = ModernPlayerVideoData.network(
+              label: element.qualityLabel,
+              url: element.url.toString(),
+              audioOverride:
+                  manifest.audioOnly.withHighestBitrate().url.toString());
+
+          if (ytVideos
+              .where((element) => element.label == videoData.label)
+              .isEmpty) {
+            ytVideos.insert(0, videoData);
+          }
         }
 
         videosData = ytVideos;
 
+        widget.audioTracks.add(ModernPlayerAudioTrackOptions(
+            source: manifest.audioOnly.withHighestBitrate().url.toString(),
+            sourceType: ModernPlayerAudioSourceType.network));
         _playerController = VlcPlayerController.network(ytVideos.first.source,
             autoPlay: true, autoInitialize: true, hwAcc: HwAcc.auto);
       } else {

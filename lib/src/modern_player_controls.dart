@@ -135,7 +135,7 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
   }
 
   /// Get audio and subtitle tracks
-  void _getTracks() async {
+  Future<void> _getTracks() async {
     _audioTracks = await player.getAudioTracks();
     _subtitleTracks = await player.getSpuTracks();
   }
@@ -189,13 +189,18 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
             .setMediaFromNetwork(videoData.source,
                 autoPlay: true, hwAcc: HwAcc.full)
             .whenComplete(() async {
-          await player.seekTo(lastPosition).then((value) {
-            player.play();
-            setState(() {
-              _currentPos = lastPosition;
-              _currentVideoData = videoData;
+          if (videoData.audioOverrride != null) {
+            await player.seekTo(lastPosition).then((value) async {
+              await player.addAudioFromNetwork(videoData.audioOverrride!,
+                  isSelected: true);
+              await _getTracks();
+              player.play();
+              setState(() {
+                _currentPos = lastPosition;
+                _currentVideoData = videoData;
+              });
             });
-          });
+          }
         });
       } else if (videoData.sourceType == ModernPlayerSourceType.file) {
         await player
