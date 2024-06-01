@@ -328,6 +328,24 @@ class DefaultSelectorCustom extends DefaultSelector {
   DefaultSelectorCustom(this.shouldUseTrack);
 }
 
+/// A [DefaultSelectorCustom] that gets initialized with a string
+/// and selects the first track with a label that contains the string.
+///
+/// Example usage:
+/// ```dart
+/// defaultSubtitleSelectors: [
+///       // Matches "English", "english", "ENG", "eng", etc.
+///       DefaultSelectorLabel("Eng"),
+///       // Falls back to [DefaultSelectorOff] if no other track matches
+///       DefaultSelectorOff(),
+///     ],
+/// ```
+class DefaultSelectorLabel extends DefaultSelectorCustom {
+  DefaultSelectorLabel(String labelSubstring)
+      : super((index, label) =>
+            label.toLowerCase().contains(labelSubstring.toLowerCase()));
+}
+
 class ModernPlayerDefaultSelectionOptions {
   List<DefaultSelector>? defaultSubtitleSelectors;
   List<DefaultSelector>? defaultAudioSelectors;
