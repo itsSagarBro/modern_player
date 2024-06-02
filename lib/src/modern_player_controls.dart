@@ -253,16 +253,23 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
             .setMediaFromNetwork(videoData.source,
                 autoPlay: true, hwAcc: HwAcc.full)
             .whenComplete(() async {
-          if (videoData.audioOverrride != null) {
+          if (videoData is ModernPlayerVideoDataYoutube) {
             await player.seekTo(lastPosition).then((value) async {
-              await player.addAudioFromNetwork(videoData.audioOverrride!,
+              await player.addAudioFromNetwork(videoData.audioOverride!,
                   isSelected: true);
-              await _getTracks();
+              _getTracks();
               player.play();
               setState(() {
                 _currentPos = lastPosition;
                 _currentVideoData = videoData;
               });
+            });
+          } else {
+            _getTracks();
+            player.play();
+            setState(() {
+              _currentPos = lastPosition;
+              _currentVideoData = videoData;
             });
           }
         });

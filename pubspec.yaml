@@ -11,7 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   visibility_detector: ^0.4.0+2
-  screen_brightness: ^0.2.2+1
+  screen_brightness: ^1.0.1
   flutter_vlc_player: ^7.4.0
   youtube_explode_dart: ^2.0.2
   wakelock_plus: ^1.1.4
@@ -19,7 +19,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
+  flutter_lints: ^4.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

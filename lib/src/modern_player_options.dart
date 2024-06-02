@@ -2,18 +2,87 @@ import 'package:flutter/material.dart';
 import 'package:modern_player/src/others/modern_players_enums.dart';
 
 /// [ModernPlayerVideo] has multiple type of player.
+/// Enhance your video playback experience with modern_player.
+/// A feature-rich Flutter package for flutter_vlc_player.
 ///
 /// With [ModernPlayerVideo.single] you can create a singel video player.
 ///
+/// Example usage:
+/// ```dart
+/// child: ModernPlayer.createPlayer(
+///   video: ModernPlayerVideo.single(
+///       source: source,
+///       sourceType: ModernPlayerSourceType.youtube),
+/// )
+/// ```
+///
 /// With [ModernPlayerVideo.multiple] you can create a video player that contains multiple qualities and resolution.
 ///
-/// With [ModernPlayerVideo.youtube] you can create a yotube video player with some extra features.
+/// Example usage:
+/// ```dart
+/// child: ModernPlayer.createPlayer(
+///   video: ModernPlayerVideo.multiple([
+///     ModernPlayerVideoData.network(label: label, url: url),
+///     ModernPlayerVideoData.network(label: label, url: url),
+///   ]),
+/// )
+/// ```
+///
+/// With [ModernPlayerVideo.youtubeWithUrl] you can create a yotube video player using video url with some extra and exclusive features.
+///
+/// Example usage:
+/// ```dart
+/// child: ModernPlayer.createPlayer(
+///   video: ModernPlayerVideo.youtubeWithId(id: id),
+/// )
+/// ```
+///
+/// With [ModernPlayerVideo.youtubeWithId] you can create a yotube video player using video id with some extra and exclusive features.
+///
+/// Example usage:
+/// ```dart
+/// child: ModernPlayer.createPlayer(
+///   video: ModernPlayerVideo.youtubeWithUrl(
+///       url: url, fetchQualities: true),
+/// )
+/// ```
 class ModernPlayerVideo {
   List<ModernPlayerVideoData> videosData = [];
   bool? fetchQualities;
 
   /// [ModernPlayerVideo.single] allow you to create a single video player, without any quality selection.
-  ModernPlayerVideo.single(ModernPlayerVideoData videoData) {
+  ///
+  /// Example usage:
+  /// ```dart
+  /// child: ModernPlayer.createPlayer(
+  ///   video: ModernPlayerVideo.single(
+  ///       source: source,
+  ///       sourceType: ModernPlayerSourceType.youtube),
+  /// )
+  /// ```
+  ModernPlayerVideo.single(
+      {required String source, required ModernPlayerSourceType sourceType}) {
+    late ModernPlayerVideoData videoData;
+
+    switch (sourceType) {
+      case ModernPlayerSourceType.file:
+        videoData = ModernPlayerVideoData.file(label: 'Default', path: source);
+        break;
+      case ModernPlayerSourceType.asset:
+        videoData = ModernPlayerVideoData.asset(label: 'Default', path: source);
+        break;
+      case ModernPlayerSourceType.youtube:
+        videoData = source.contains('https') || source.contains('youtube')
+            ? ModernPlayerVideoData.youtubeWithUrl(
+                label: 'Default', url: source)
+            : ModernPlayerVideoData.youtubeWithId(label: 'Default', id: source);
+        break;
+      default:
+        videoData =
+            ModernPlayerVideoData.network(label: 'Default', url: source);
+        break;
+    }
+
     videosData = [videoData];
   }
 
@@ -57,18 +126,13 @@ class ModernPlayerVideoData {
   /// This can define type of data source of Modern Player.
   ModernPlayerSourceType sourceType = ModernPlayerSourceType.asset;
 
-  /// Url of audio for override [For youtube obly]
-  String? audioOverrride;
-
   ///Constructs a [ModernPlayerVideoData] playing a video from obtained from the network.
   ///
   ///The URL for the video is given by the [url] argument and must not be null
   ///and the [label] is displayed on quality selection on menu.
-  ModernPlayerVideoData.network(
-      {required this.label, required String url, String? audioOverride}) {
+  ModernPlayerVideoData.network({required this.label, required String url}) {
     source = url;
     sourceType = ModernPlayerSourceType.network;
-    audioOverrride = audioOverride;
   }
 
   ///Constructs a [ModernPlayerVideoData] playing a video from obtained from the local file.
@@ -124,6 +188,16 @@ class ModernPlayerVideoData {
         ? match.group(7)
         : null;
   }
+}
+
+/// ModernPlayerVideoDataYoutube is an internal class which used for accessing all qualities of video from youtube and merging an audio
+class ModernPlayerVideoDataYoutube extends ModernPlayerVideoData {
+  /// Url of audio for override [For youtube obly]
+  String? audioOverride;
+
+  ModernPlayerVideoDataYoutube.network(
+      {required super.label, required super.url, required this.audioOverride})
+      : super.network();
 }
 
 /// Modern Player Option gies some basic controls for video.
@@ -351,6 +425,7 @@ class DefaultSelectorLabel extends DefaultSelectorCustom {
             label.toLowerCase().contains(labelSubstring.toLowerCase()));
 }
 
+/// [ModernPlayerDefaultSelectionOptions] provides you ability to select default subtitle, audio and video quality.
 class ModernPlayerDefaultSelectionOptions {
   List<DefaultSelector>? defaultSubtitleSelectors;
   List<DefaultSelector>? defaultAudioSelectors;

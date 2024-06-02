@@ -1,3 +1,9 @@
+## Upcoming
+
+* Added default selector for audio, subtitle and qualities
+* Added ability to fetch all qualities from youtube
+* Updated screen_brightness plugin to version 1.0.1
+
 ## 0.0.6
 
 * Fixed "Target of URI doesn't exist: 'others/Modern_player_utils.dart'"

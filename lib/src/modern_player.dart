@@ -138,11 +138,12 @@ class _ModernPlayerState extends State<ModernPlayer> {
         List<ModernPlayerVideoData> ytVideos = List.empty(growable: true);
 
         for (var element in manifest.videoOnly) {
-          ModernPlayerVideoData videoData = ModernPlayerVideoData.network(
-              label: element.qualityLabel,
-              url: element.url.toString(),
-              audioOverride:
-                  manifest.audioOnly.withHighestBitrate().url.toString());
+          ModernPlayerVideoData videoData =
+              ModernPlayerVideoDataYoutube.network(
+                  label: element.qualityLabel,
+                  url: element.url.toString(),
+                  audioOverride:
+                      manifest.audioOnly.withHighestBitrate().url.toString());
 
           if (ytVideos
               .where((element) => element.label == videoData.label)
