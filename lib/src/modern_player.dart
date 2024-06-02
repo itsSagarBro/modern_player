@@ -20,6 +20,7 @@ class ModernPlayer extends StatefulWidget {
       {required this.video,
       required this.subtitles,
       required this.audioTracks,
+      this.defaultSelectionOptions,
       this.options,
       this.controlsOptions,
       this.themeOptions,
@@ -36,6 +37,9 @@ class ModernPlayer extends StatefulWidget {
 
   /// If you wish to add audio from [file] or [network], you can use this [audioTracks].
   final List<ModernPlayerAudioTrackOptions> audioTracks;
+
+  /// Default selection options for subtitles and audio tracks.
+  final ModernPlayerDefaultSelectionOptions? defaultSelectionOptions;
 
   // Modern player options gives you some basic controls for video
   final ModernPlayerOptions? options;
@@ -56,6 +60,7 @@ class ModernPlayer extends StatefulWidget {
       {required ModernPlayerVideo video,
       List<ModernPlayerSubtitleOptions>? subtitles,
       List<ModernPlayerAudioTrackOptions>? audioTracks,
+      ModernPlayerDefaultSelectionOptions? defaultSelectionOptions,
       ModernPlayerOptions? options,
       ModernPlayerControlsOptions? controlsOptions,
       ModernPlayerThemeOptions? themeOptions,
@@ -67,6 +72,7 @@ class ModernPlayer extends StatefulWidget {
       audioTracks: audioTracks ?? [],
       options: options,
       controlsOptions: controlsOptions,
+      defaultSelectionOptions: defaultSelectionOptions,
       themeOptions: themeOptions,
       translationOptions: translationOptions,
       callbackOptions: callbackOptions,
@@ -291,6 +297,8 @@ class _ModernPlayerState extends State<ModernPlayer> {
                   videos: videosData,
                   controlsOptions:
                       widget.controlsOptions ?? ModernPlayerControlsOptions(),
+                  defaultSelectionOptions: widget.defaultSelectionOptions ??
+                      ModernPlayerDefaultSelectionOptions(),
                   themeOptions:
                       widget.themeOptions ?? ModernPlayerThemeOptions(),
                   translationOptions: widget.translationOptions ??
