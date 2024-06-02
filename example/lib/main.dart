@@ -86,10 +86,12 @@ class _MyHomePageState extends State<MyHomePage> {
             SizedBox(
               height: 250,
               child: ModernPlayer.createPlayer(
-                video: ModernPlayerVideo.single(
-                    source:
+                defaultSelectionOptions: ModernPlayerDefaultSelectionOptions(
+                    defaultQualitySelectors: [DefaultSelectorLabel('360p')]),
+                video: ModernPlayerVideo.youtubeWithUrl(
+                    url:
                         'https://www.youtube.com/watch?v=vEHeI_wBzu0&ab_channel=UntitledStudio',
-                    sourceType: ModernPlayerSourceType.youtube),
+                    fetchQualities: true),
               ),
             )
           ],

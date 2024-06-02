@@ -1,6 +1,6 @@
-## Upcoming
+## 0.1.0
 
-* Added default selector for audio, subtitle and qualities
+* Added default selector for audio, subtitle and video qualities
 * Added ability to fetch all qualities from youtube
 * Updated screen_brightness plugin to version 1.0.1
 

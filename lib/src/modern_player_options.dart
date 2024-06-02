@@ -74,8 +74,13 @@ class ModernPlayerVideo {
       case ModernPlayerSourceType.youtube:
         videoData = source.contains('https') || source.contains('youtube')
             ? ModernPlayerVideoData.youtubeWithUrl(
-                label: 'Default', url: source)
-            : ModernPlayerVideoData.youtubeWithId(label: 'Default', id: source);
+                label: 'Default',
+                url: source,
+              )
+            : ModernPlayerVideoData.youtubeWithId(
+                label: 'Default',
+                id: source,
+              );
         break;
       default:
         videoData =

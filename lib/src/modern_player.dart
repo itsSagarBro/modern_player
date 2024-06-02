@@ -92,6 +92,8 @@ class _ModernPlayerState extends State<ModernPlayer> {
   double visibilityFraction = 1;
   String? youtubeId;
 
+  late ModernPlayerVideoData selectedQuality;
+
   List<ModernPlayerVideoData> videosData = List.empty(growable: true);
 
   @override
@@ -103,14 +105,23 @@ class _ModernPlayerState extends State<ModernPlayer> {
     }
 
     videosData = widget.video.videosData;
-
     _setPlayer();
   }
 
   void _setPlayer() async {
+    ModernPlayerVideoData defaultSource = videosData.length > 1
+        ? _getDefaultTrackSource(
+                selectors:
+                    widget.defaultSelectionOptions?.defaultQualitySelectors,
+                trackEntries: videosData) ??
+            videosData.first
+        : videosData.first;
+
+    selectedQuality = defaultSource;
+
     // Network
-    if (videosData.first.sourceType == ModernPlayerSourceType.network) {
-      _playerController = VlcPlayerController.network(videosData.first.source,
+    if (defaultSource.sourceType == ModernPlayerSourceType.network) {
+      _playerController = VlcPlayerController.network(defaultSource.source,
           autoPlay: true,
           autoInitialize: true,
           hwAcc: HwAcc.auto,
@@ -120,17 +131,14 @@ class _ModernPlayerState extends State<ModernPlayer> {
           ));
     }
     // File
-    else if (videosData.first.sourceType == ModernPlayerSourceType.file) {
-      _playerController = VlcPlayerController.file(
-          File(videosData.first.source),
-          autoPlay: true,
-          autoInitialize: true,
-          hwAcc: HwAcc.auto);
+    else if (defaultSource.sourceType == ModernPlayerSourceType.file) {
+      _playerController = VlcPlayerController.file(File(defaultSource.source),
+          autoPlay: true, autoInitialize: true, hwAcc: HwAcc.auto);
     }
     // Youtube
-    else if (videosData.first.sourceType == ModernPlayerSourceType.youtube) {
+    else if (defaultSource.sourceType == ModernPlayerSourceType.youtube) {
       var yt = YoutubeExplode();
-      youtubeId = videosData.first.source;
+      youtubeId = defaultSource.source;
       StreamManifest manifest =
           await yt.videos.streamsClient.getManifest(youtubeId);
 
@@ -157,8 +165,18 @@ class _ModernPlayerState extends State<ModernPlayer> {
         widget.audioTracks.add(ModernPlayerAudioTrackOptions(
             source: manifest.audioOnly.withHighestBitrate().url.toString(),
             sourceType: ModernPlayerAudioSourceType.network));
-        _playerController = VlcPlayerController.network(ytVideos.first.source,
-            autoPlay: true, autoInitialize: true, hwAcc: HwAcc.auto);
+
+        ModernPlayerVideoData? defaultSourceYt = _getDefaultTrackSource(
+            selectors: widget.defaultSelectionOptions?.defaultQualitySelectors,
+            trackEntries: ytVideos);
+
+        selectedQuality = defaultSourceYt ?? defaultSource;
+
+        _playerController = VlcPlayerController.network(
+            defaultSourceYt?.source ?? ytVideos.first.source,
+            autoPlay: true,
+            autoInitialize: true,
+            hwAcc: HwAcc.auto);
       } else {
         _playerController = VlcPlayerController.network(
             manifest.muxed.withHighestBitrate().url.toString(),
@@ -171,7 +189,7 @@ class _ModernPlayerState extends State<ModernPlayer> {
     }
     // Asset
     else {
-      _playerController = VlcPlayerController.asset(videosData.first.source,
+      _playerController = VlcPlayerController.asset(defaultSource.source,
           autoPlay: true, autoInitialize: true, hwAcc: HwAcc.full);
     }
 
@@ -181,6 +199,36 @@ class _ModernPlayerState extends State<ModernPlayer> {
     setState(() {
       canDisplayVideo = true;
     });
+  }
+
+  /// Helper function to set default track for subtitle, audio, etc
+  ModernPlayerVideoData? _getDefaultTrackSource(
+      {required List<DefaultSelector>? selectors,
+      required List<ModernPlayerVideoData>? trackEntries}) {
+    if (selectors == null || trackEntries == null || trackEntries.isEmpty) {
+      return null;
+    }
+
+    for (final selector in selectors) {
+      switch (selector) {
+        case DefaultSelectorCustom():
+          ModernPlayerVideoData? selected;
+          for (int i = 0; i < trackEntries.length; i++) {
+            if (selector.shouldUseTrack(i, trackEntries[i].label)) {
+              selected = trackEntries[i];
+              break;
+            }
+          }
+
+          if (selected != null) {
+            return selected;
+            // Else, if no track is found, loop to the next selector
+          }
+        case DefaultSelectorOff():
+          return null;
+      }
+    }
+    return null;
   }
 
   void _onInitialize() async {
@@ -308,6 +356,7 @@ class _ModernPlayerState extends State<ModernPlayer> {
                       MediaQuery.of(context).size.height),
                   callbackOptions:
                       widget.callbackOptions ?? ModernPlayerCallbackOptions(),
+                  selectedQuality: selectedQuality,
                 )
             ],
           )

@@ -6,7 +6,6 @@ import 'package:flutter_vlc_player/flutter_vlc_player.dart';
 import 'package:modern_player/modern_player.dart';
 import 'package:modern_player/src/modern_player_options.dart';
 import 'package:modern_player/src/others/modern_player_utils.dart';
-import 'package:modern_player/src/others/modern_players_enums.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
@@ -22,7 +21,8 @@ class ModernPlayerControls extends StatefulWidget {
       required this.defaultSelectionOptions,
       required this.themeOptions,
       required this.translationOptions,
-      required this.callbackOptions});
+      required this.callbackOptions,
+      required this.selectedQuality});
 
   final VlcPlayerController player;
   final Size viewSize;
@@ -32,6 +32,7 @@ class ModernPlayerControls extends StatefulWidget {
   final ModernPlayerThemeOptions themeOptions;
   final ModernPlayerTranslationOptions translationOptions;
   final ModernPlayerCallbackOptions callbackOptions;
+  final ModernPlayerVideoData selectedQuality;
 
   @override
   State<ModernPlayerControls> createState() => _ModernPlayerControlsState();
@@ -96,12 +97,10 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
     _duration = player.value.duration;
     _currentPos = player.value.position;
 
-    _currentVideoData = widget.videos.first;
-
+    _currentVideoData = widget.selectedQuality;
     _customActionButtons = widget.controlsOptions.customActionButtons ?? [];
 
     player.addListener(_listen);
-
     super.initState();
   }
 
