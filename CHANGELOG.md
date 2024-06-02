@@ -1,4 +1,4 @@
-## Upcoming
+## 0.1.0
 
 * Added default selector for audio, subtitle and video qualities
 * Added ability to fetch all qualities from youtube
