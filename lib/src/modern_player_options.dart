@@ -314,6 +314,49 @@ class ModernPlayerCustomActionButton {
       {required this.icon, this.onPressed, this.onDoubleTap, this.onLongPress});
 }
 
+/// The top level type which defines the strategies for selecting tracks
+sealed class DefaultSelector {}
+
+/// Will default to disabling this track
+class DefaultSelectorOff extends DefaultSelector {}
+
+/// Provide custom logic for selecting a track
+/// It will pick the first track that returns true
+class DefaultSelectorCustom extends DefaultSelector {
+  final bool Function(int index, String label) shouldUseTrack;
+
+  DefaultSelectorCustom(this.shouldUseTrack);
+}
+
+/// A [DefaultSelectorCustom] that gets initialized with a string
+/// and selects the first track with a label that contains the string.
+///
+/// Example usage:
+/// ```dart
+/// defaultSubtitleSelectors: [
+///       // Matches "English", "english", "ENG", "eng", etc.
+///       DefaultSelectorLabel("Eng"),
+///       // Falls back to [DefaultSelectorOff] if no other track matches
+///       DefaultSelectorOff(),
+///     ],
+/// ```
+class DefaultSelectorLabel extends DefaultSelectorCustom {
+  DefaultSelectorLabel(String labelSubstring)
+      : super((index, label) =>
+            label.toLowerCase().contains(labelSubstring.toLowerCase()));
+}
+
+class ModernPlayerDefaultSelectionOptions {
+  List<DefaultSelector>? defaultSubtitleSelectors;
+  List<DefaultSelector>? defaultAudioSelectors;
+  List<DefaultSelector>? defaultQualitySelectors;
+
+  ModernPlayerDefaultSelectionOptions(
+      {this.defaultSubtitleSelectors,
+      this.defaultAudioSelectors,
+      this.defaultQualitySelectors});
+}
+
 /// Subtitle Option for Modern Player
 ///
 /// With subtitle option you can add subtitle in video from other sources.
