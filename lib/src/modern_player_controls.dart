@@ -726,115 +726,146 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
       right: 0,
       bottom: 10,
       child: Container(
-        height: 50,
+        height: widget.controlsOptions.durationAboveSlider ? 68 : 50,
         decoration: BoxDecoration(
             color: getIconsBackgroundColor(),
             borderRadius: BorderRadius.circular(15)),
         margin: const EdgeInsets.symmetric(horizontal: 15),
         padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: Row(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(
-              width: 40,
-              child: IconButton(
-                onPressed: () {
-                  _startHideTimer();
-                  _seekBackward();
-                },
-                icon: const Icon(
-                  Icons.replay_10_rounded,
-                  size: 20,
-                ),
-                color: Colors.white,
-              ),
-            ),
-            SizedBox(
-              width: 40,
-              child: GestureDetector(
-                onTap: () {
-                  _startHideTimer();
-                  _playOrPause();
-                },
-                child: Icon(
-                  player.value.isPlaying
-                      ? Icons.pause_rounded
-                      : Icons.play_arrow_rounded,
-                  size: 36,
-                  color: Colors.white,
+            //Duration above seekbar
+            if (widget.controlsOptions.durationAboveSlider)
+              SizedBox(
+                height: 20,
+                child: FittedBox(
+                  fit: BoxFit.fitHeight,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 55),
+                    child: Text(
+                      "${getFormattedDuration(_seekPos > 0 ? Duration(seconds: _seekPos) : _currentPos)}/${getFormattedDuration(Duration(seconds: duration))}",
+                      style: widget.themeOptions.progressSliderTheme
+                              ?.progressTextStyle ??
+                          const TextStyle(color: Colors.white, fontSize: 12),
+                    ),
+                  ),
                 ),
               ),
-            ),
-            SizedBox(
-              width: 40,
-              child: IconButton(
-                onPressed: () {
-                  _startHideTimer();
-                  _seekForward();
-                },
-                icon: const Icon(
-                  Icons.forward_10_rounded,
-                  size: 20,
+
+            Row(
+              children: [
+                //Backward Seek
+                if (widget.controlsOptions.showBottomBarSeekIcons)
+                  SizedBox(
+                    width: 40,
+                    child: IconButton(
+                      onPressed: () {
+                        _startHideTimer();
+                        _seekBackward();
+                      },
+                      icon: const Icon(
+                        Icons.replay_10_rounded,
+                        size: 20,
+                      ),
+                      color: Colors.white,
+                    ),
+                  ),
+                SizedBox(
+                  width: 40,
+                  child: GestureDetector(
+                    onTap: () {
+                      _startHideTimer();
+                      _playOrPause();
+                    },
+                    child: Icon(
+                      player.value.isPlaying
+                          ? Icons.pause_rounded
+                          : Icons.play_arrow_rounded,
+                      size: 36,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(
-              width: 5,
-            ),
-            Text(
-              getFormattedDuration(
-                  _seekPos > 0 ? Duration(seconds: _seekPos) : _currentPos),
-              style:
-                  widget.themeOptions.progressSliderTheme?.progressTextStyle ??
-                      const TextStyle(color: Colors.white, fontSize: 12),
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-            Expanded(
-                child: SliderTheme(
-              data: SliderThemeData(
-                  trackShape: VideoSliderTrackShape(),
-                  activeTrackColor: widget.themeOptions.progressSliderTheme
-                          ?.activeSliderColor ??
-                      Colors.greenAccent,
-                  secondaryActiveTrackColor: widget.themeOptions
-                          .progressSliderTheme?.bufferSliderColor ??
-                      Colors.white,
-                  thumbColor:
-                      widget.themeOptions.progressSliderTheme?.thumbColor ??
+                //Forward Seek
+                if (widget.controlsOptions.showBottomBarSeekIcons)
+                  SizedBox(
+                    width: 40,
+                    child: IconButton(
+                      onPressed: () {
+                        _startHideTimer();
+                        _seekForward();
+                      },
+                      icon: const Icon(
+                        Icons.forward_10_rounded,
+                        size: 20,
+                      ),
+                      color: Colors.white,
+                    ),
+                  ),
+                const SizedBox(
+                  width: 5,
+                ),
+                if (!widget.controlsOptions.durationAboveSlider)
+                  Text(
+                    getFormattedDuration(_seekPos > 0
+                        ? Duration(seconds: _seekPos)
+                        : _currentPos),
+                    style: widget.themeOptions.progressSliderTheme
+                            ?.progressTextStyle ??
+                        const TextStyle(color: Colors.white, fontSize: 12),
+                  ),
+                const SizedBox(
+                  width: 10,
+                ),
+                Expanded(
+                    child: SliderTheme(
+                  data: SliderThemeData(
+                      trackShape: VideoSliderTrackShape(),
+                      activeTrackColor: widget.themeOptions.progressSliderTheme
+                              ?.activeSliderColor ??
+                          Colors.greenAccent,
+                      secondaryActiveTrackColor: widget.themeOptions
+                              .progressSliderTheme?.bufferSliderColor ??
                           Colors.white,
-                  inactiveTrackColor: widget.themeOptions.progressSliderTheme
-                          ?.inactiveSliderColor ??
-                      Colors.white60,
-                  thumbShape: const RoundSliderThumbShape(
-                      enabledThumbRadius: 7, pressedElevation: 10)),
-              child: Slider(
-                value: currentValue.toDouble(),
-                min: 0,
-                max: duration.toDouble(),
-                onChanged: (value) {
-                  _startHideTimer();
-                  setState(() {
-                    _seekPos = value.toInt();
-                  });
-                },
-                onChangeEnd: (value) {
-                  _seekTo(Duration(seconds: value.toInt()));
-                },
-              ),
-            )),
-            const SizedBox(
-              width: 10,
-            ),
-            Text(
-              "-${getFormattedDuration(_seekPos > 0 ? Duration(seconds: duration - _seekPos) : remaining)}",
-              style:
-                  widget.themeOptions.progressSliderTheme?.progressTextStyle ??
-                      const TextStyle(color: Colors.white, fontSize: 12),
-            ),
-            const SizedBox(
-              width: 5,
+                      thumbColor:
+                          widget.themeOptions.progressSliderTheme?.thumbColor ??
+                              Colors.white,
+                      inactiveTrackColor: widget.themeOptions
+                              .progressSliderTheme?.inactiveSliderColor ??
+                          Colors.white60,
+                      thumbShape: const RoundSliderThumbShape(
+                          enabledThumbRadius: 7, pressedElevation: 10)),
+                  child: Slider(
+                    value: currentValue.toDouble(),
+                    min: 0,
+                    max: duration.toDouble(),
+                    onChanged: (value) {
+                      _startHideTimer();
+                      setState(() {
+                        _seekPos = value.toInt();
+                      });
+                    },
+                    onChangeEnd: (value) {
+                      _seekTo(Duration(seconds: value.toInt()));
+                    },
+                  ),
+                )),
+                const SizedBox(
+                  width: 10,
+                ),
+                if (!widget.controlsOptions.durationAboveSlider)
+                  Text(
+                    "-${getFormattedDuration(_seekPos > 0 ? Duration(seconds: duration - _seekPos) : remaining)}",
+                    style: widget.themeOptions.progressSliderTheme
+                            ?.progressTextStyle ??
+                        const TextStyle(color: Colors.white, fontSize: 12),
+                  ),
+                const SizedBox(
+                  width: 5,
+                ),
+              ],
             ),
           ],
         ),

@@ -238,6 +238,9 @@ class ModernPlayerControlsOptions {
   /// Toggle bottom progress bar visibilty.
   bool showBottomBar;
 
+  /// Toggle bottom seek icons visibilty.
+  bool showBottomBarSeekIcons;
+
   /// Toggle back button visibilty.
   bool showBackbutton;
 
@@ -253,6 +256,9 @@ class ModernPlayerControlsOptions {
   /// Time for auto hiding controls
   Duration? autoHideTime;
 
+  /// Duration text shown above the progress slider.
+  bool durationAboveSlider;
+
   /// With custom action button you can create your own button an get a callback on pressed, double tap, and long press.
   List<ModernPlayerCustomActionButton>? customActionButtons;
 
@@ -262,11 +268,13 @@ class ModernPlayerControlsOptions {
       this.showMute = true,
       this.showBackbutton = true,
       this.showBottomBar = true,
+      this.showBottomBarSeekIcons = true,
       this.enableVolumeSlider = true,
       this.enableBrightnessSlider = true,
       this.doubleTapToSeek = true,
       this.customActionButtons,
-      this.autoHideTime});
+      this.autoHideTime,
+      this.durationAboveSlider = false});
 }
 
 /// Theme option for Modern Player

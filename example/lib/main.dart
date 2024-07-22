@@ -57,6 +57,8 @@ class _MyHomePageState extends State<MyHomePage> {
       showMenu: true,
       showMute: false,
       showBackbutton: false,
+      showBottomBarSeekIcons: false,
+      durationAboveSlider: true,
       enableVolumeSlider: true,
       enableBrightnessSlider: true,
       showBottomBar: true,
@@ -89,9 +91,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 defaultSelectionOptions: ModernPlayerDefaultSelectionOptions(
                     defaultQualitySelectors: [DefaultSelectorLabel('360p')]),
                 video: ModernPlayerVideo.youtubeWithUrl(
-                    url:
-                        'https://www.youtube.com/watch?v=vEHeI_wBzu0&ab_channel=UntitledStudio',
-                    fetchQualities: true),
+                  url:
+                      'https://www.youtube.com/watch?v=vEHeI_wBzu0&ab_channel=UntitledStudio',
+                  fetchQualities: true,
+                ),
+                controlsOptions: controlsOptions,
+                themeOptions: themeOptions,
               ),
             )
           ],
