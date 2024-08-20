@@ -849,91 +849,95 @@ class _ModernPlayerControlsState extends State<ModernPlayerControls> {
       showDragHandle: true,
       backgroundColor: getMenuBackgroundColor(),
       constraints: const BoxConstraints(maxWidth: 400),
-      builder: (context) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            GestureDetector(
-              onTap: () {
-                Navigator.pop(context);
-                ModernPlayerMenus().showQualityOptions(context,
-                    menuColor: getMenuBackgroundColor(),
-                    currentData: _currentVideoData,
-                    allData: widget.videos,
-                    onChangedQuality: _changeVideoQuality);
-              },
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.settings_outlined,
-                    color: Colors.white,
-                  ),
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  Text(
-                    "${translationOptions.qualityHeaderText ?? "Quality"}  ◉  ",
-                    style: const TextStyle(color: Colors.white, fontSize: 16),
-                  ),
-                  Text(
-                    _currentVideoData.label,
-                    style: const TextStyle(color: Colors.white60, fontSize: 16),
-                  )
-                ],
+      builder: (context) => SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                  ModernPlayerMenus().showQualityOptions(context,
+                      menuColor: getMenuBackgroundColor(),
+                      currentData: _currentVideoData,
+                      allData: widget.videos,
+                      onChangedQuality: _changeVideoQuality);
+                },
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.settings_outlined,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    Text(
+                      "${translationOptions.qualityHeaderText ?? "Quality"}  ◉  ",
+                      style: const TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                    Text(
+                      _currentVideoData.label,
+                      style:
+                          const TextStyle(color: Colors.white60, fontSize: 16),
+                    )
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(
-              height: 30,
-            ),
-            GestureDetector(
-              onTap: () {
-                Navigator.pop(context);
-                ModernPlayerMenus().showPlabackSpeedOptions(context,
-                    menuColor: getMenuBackgroundColor(),
-                    text:
-                        translationOptions.defaultPlaybackSpeedText ?? "Normal",
-                    currentSpeed: player.value.playbackSpeed,
-                    allSpeeds: _playbackSpeeds, onChnagedSpeed: (speed) {
-                  player.setPlaybackSpeed(speed);
-                  widget.callbackOptions.onChangedPlaybackSpeed?.call(speed);
-                });
-              },
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.speed_rounded,
-                    color: Colors.white,
-                  ),
-                  const SizedBox(
-                    width: 20,
-                  ),
-                  Text(
-                    "${translationOptions.playbackSpeedText ?? "Plaback speed"}  ◉  ",
-                    style: const TextStyle(color: Colors.white, fontSize: 16),
-                  ),
-                  Text(
-                    player.value.playbackSpeed == 1
-                        ? translationOptions.defaultPlaybackSpeedText ??
-                            "Normal"
-                        : "${player.value.playbackSpeed.toStringAsFixed(2)}x",
-                    style: const TextStyle(color: Colors.white60, fontSize: 16),
-                  )
-                ],
+              const SizedBox(
+                height: 30,
               ),
-            ),
-            const SizedBox(
-              height: 30,
-            ),
-            _subtitleRowWidget(context),
-            const SizedBox(
-              height: 30,
-            ),
-            _audioRowWidget(context),
-            const SizedBox(
-              height: 10,
-            ),
-          ],
+              GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                  ModernPlayerMenus().showPlabackSpeedOptions(context,
+                      menuColor: getMenuBackgroundColor(),
+                      text: translationOptions.defaultPlaybackSpeedText ??
+                          "Normal",
+                      currentSpeed: player.value.playbackSpeed,
+                      allSpeeds: _playbackSpeeds, onChnagedSpeed: (speed) {
+                    player.setPlaybackSpeed(speed);
+                    widget.callbackOptions.onChangedPlaybackSpeed?.call(speed);
+                  });
+                },
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.speed_rounded,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    Text(
+                      "${translationOptions.playbackSpeedText ?? "Plaback speed"}  ◉  ",
+                      style: const TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                    Text(
+                      player.value.playbackSpeed == 1
+                          ? translationOptions.defaultPlaybackSpeedText ??
+                              "Normal"
+                          : "${player.value.playbackSpeed.toStringAsFixed(2)}x",
+                      style:
+                          const TextStyle(color: Colors.white60, fontSize: 16),
+                    )
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 30,
+              ),
+              _subtitleRowWidget(context),
+              const SizedBox(
+                height: 30,
+              ),
+              _audioRowWidget(context),
+              const SizedBox(
+                height: 10,
+              ),
+            ],
+          ),
         ),
       ),
     );
