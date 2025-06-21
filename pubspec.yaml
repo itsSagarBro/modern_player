@@ -1,10 +1,10 @@
 name: modern_player
 description: Enhance your video playback experience with modern_player. A feature-rich Flutter package for flutter_vlc_player.
-version: 0.1.0
+version: 0.1.1
 homepage: https://github.com/itsSagarBro/modern_player
 
 environment:
-  sdk: '>=3.1.0 <4.0.0'
+  sdk: '>=3.2.0 <4.0.0'
   flutter: ">=1.17.0"
 
 dependencies:
@@ -15,6 +15,7 @@ dependencies:
   flutter_vlc_player: ^7.4.0
   youtube_explode_dart: ^2.0.2
   wakelock_plus: ^1.1.4
+  collection: ^1.18.0
 
 dev_dependencies:
   flutter_test:

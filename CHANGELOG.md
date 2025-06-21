@@ -1,3 +1,8 @@
+## 0.1.1
+
+* Added fullscreen management support
+* Added ability to fetch current video position
+
 ## 0.1.0
 
 * Added default selector for audio, subtitle and video qualities

@@ -241,6 +241,12 @@ class ModernPlayerControlsOptions {
   /// Toggle back button visibilty.
   bool showBackbutton;
 
+  /// Toggle fullscreen button visibility.
+  bool showFullscreen;
+
+  /// Toggle auto-fullscreen on rotation.
+  bool enableAutoFullscreen;
+
   /// Toggle slide to control volume.
   bool enableVolumeSlider;
 
@@ -262,6 +268,8 @@ class ModernPlayerControlsOptions {
       this.showMute = true,
       this.showBackbutton = true,
       this.showBottomBar = true,
+      this.showFullscreen = true,
+      this.enableAutoFullscreen = true,
       this.enableVolumeSlider = true,
       this.enableBrightnessSlider = true,
       this.doubleTapToSeek = true,
@@ -572,6 +580,12 @@ class ModernPlayerCallbackOptions {
   /// [onMutePressed] calls when user clicked mute button.
   Function? onMutePressed;
 
+  /// [onEnterFullscreen] calls when entering fullscreen mode.
+  Function? onEnterFullscreen;
+
+  /// [onExitFullscreen] calls when exiting fullscreen mode.
+  Function? onExitFullscreen;
+
   ModernPlayerCallbackOptions(
       {this.onPlay,
       this.onPause,
@@ -584,5 +598,7 @@ class ModernPlayerCallbackOptions {
       this.onChangedPlaybackSpeed,
       this.onBackPressed,
       this.onMenuPressed,
-      this.onMutePressed});
+      this.onMutePressed,
+      this.onEnterFullscreen,
+      this.onExitFullscreen});
 }

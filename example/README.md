@@ -1,3 +1,3 @@
 # example
 
-Example of modern_player
+Example of modern_player v2
